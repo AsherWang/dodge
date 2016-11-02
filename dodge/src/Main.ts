@@ -33,7 +33,16 @@ class Main extends egret.DisplayObjectContainer {
      * 加载进度界面
      * Process interface loading
      */
-    private loadingView:LoadingUI;
+
+    public static Size = {
+        height: 0,
+        weidth: 0
+    };
+    private loadingView: LoadingUI;
+    private welcomeSceneView: WelcomeScene;
+    private mainSceneView: MainScene;
+    private scoreBoard: ScoreBoard;
+
 
     public constructor() {
         super();
@@ -43,9 +52,9 @@ class Main extends egret.DisplayObjectContainer {
     private onAddToStage(event:egret.Event) {
         //设置加载进度界面
         //Config to load process interface
+
         this.loadingView = new LoadingUI();
         this.stage.addChild(this.loadingView);
-
         //初始化Resource资源加载库
         //initiate Resource loading library
         RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onConfigComplete, this);
@@ -71,6 +80,10 @@ class Main extends egret.DisplayObjectContainer {
      */
     private onResourceLoadComplete(event:RES.ResourceEvent):void {
         if (event.groupName == "preload") {
+            RES.loadGroup("ui");
+        } if (event.groupName == "ui") {
+            RES.loadGroup("enemy");
+        }else if(event.groupName == "enemy"){
             this.stage.removeChild(this.loadingView);
             RES.removeEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onResourceLoadComplete, this);
             RES.removeEventListener(RES.ResourceEvent.GROUP_LOAD_ERROR, this.onResourceLoadError, this);
@@ -116,60 +129,92 @@ class Main extends egret.DisplayObjectContainer {
      * 创建游戏场景
      * Create a game scene
      */
-    private createGameScene():void {
-        var sky:egret.Bitmap = this.createBitmapByName("bg_jpg");
-        this.addChild(sky);
+    private createGameScene(): void {
         var stageW:number = this.stage.stageWidth;
         var stageH:number = this.stage.stageHeight;
-        sky.width = stageW;
-        sky.height = stageH;
+        this.welcomeSceneView = new WelcomeScene();
+        this.welcomeSceneView.height = stageH / 2;
+        this.makeChildCenter(this.welcomeSceneView, stageW, stageH);
+        this.stage.addChild(this.welcomeSceneView);
 
-        var topMask = new egret.Shape();
-        topMask.graphics.beginFill(0x000000, 0.5);
-        topMask.graphics.drawRect(0, 0, stageW, 172);
-        topMask.graphics.endFill();
-        topMask.y = 33;
-        this.addChild(topMask);
-
-        var icon:egret.Bitmap = this.createBitmapByName("egret_icon_png");
-        this.addChild(icon);
-        icon.x = 26;
-        icon.y = 33;
-
-        var line = new egret.Shape();
-        line.graphics.lineStyle(2,0xffffff);
-        line.graphics.moveTo(0,0);
-        line.graphics.lineTo(0,117);
-        line.graphics.endFill();
-        line.x = 172;
-        line.y = 61;
-        this.addChild(line);
-
-
-        var colorLabel = new egret.TextField();
-        colorLabel.textColor = 0xffffff;
-        colorLabel.width = stageW - 172;
-        colorLabel.textAlign = "center";
-        colorLabel.text = "Hello Egret";
-        colorLabel.size = 24;
-        colorLabel.x = 172;
-        colorLabel.y = 80;
-        this.addChild(colorLabel);
-
-        var textfield = new egret.TextField();
-        this.addChild(textfield);
-        textfield.alpha = 0;
-        textfield.width = stageW - 172;
-        textfield.textAlign = egret.HorizontalAlign.CENTER;
-        textfield.size = 24;
-        textfield.textColor = 0xffffff;
-        textfield.x = 172;
-        textfield.y = 135;
-        this.textfield = textfield;
+        this.welcomeSceneView.addEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
 
         //根据name关键字，异步获取一个json配置文件，name属性请参考resources/resource.json配置文件的内容。
         // Get asynchronously a json configuration file according to name keyword. As for the property of name please refer to the configuration file of resources/resource.json.
-        RES.getResAsync("description_json", this.startAnimation, this)
+        //RES.getResAsync("description_json", this.startAnimation, this)
+    }
+
+
+    //游戏开始
+    private OnGameStart(evt: GameEvent) {
+        this.welcomeSceneView.removeEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
+        this.stage.removeChild(this.welcomeSceneView);
+        if (!this.mainSceneView) {
+            this.mainSceneView = new MainScene();
+        }
+        var stageW: number = this.stage.stageWidth;
+        var stageH: number = this.stage.stageHeight;
+        this.mainSceneView.height = stageH;
+        this.mainSceneView.width = stageW;
+        this.makeChildCenter(this.mainSceneView, stageW, stageH);
+        this.stage.addChild(this.mainSceneView);
+        this.mainSceneView.run();
+
+        //添加事件监听,包括游戏结束,游戏暂停,游戏恢复
+        this.mainSceneView.addEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
+        this.mainSceneView.addEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.addEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+        
+    }
+
+    //游戏结束
+    private OnGameOver(evt: GameEvent) {
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+
+        this.stage.removeChild(this.mainSceneView);
+
+        var stageW: number = this.stage.stageWidth;
+        var stageH: number = this.stage.stageHeight;
+        if (!this.scoreBoard) {
+            this.scoreBoard = new ScoreBoard(stageW,stageH);
+        }
+        this.makeChildCenter(this.scoreBoard, stageW,stageH);
+
+
+        this.stage.addChild(this.scoreBoard);
+
+    }
+
+    //游戏暂停
+    private OnGamePause(evt: GameEvent) {
+
+        //应该不需要删除这个事件绑定,看情况
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+
+
+
+    }
+
+    //游戏恢复
+    private OnGameResume(evt: GameEvent) {
+
+        //应该不需要删除这个事件绑定,看情况
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+
+
+
+
+    }
+
+
+    //使其居中
+    private makeChildCenter(child:any,stageW:number,stageH:number):void{
+        child.anchorOffsetX = child.width / 2;
+        child.anchorOffsetY = child.height / 2;
+        child.x = stageW / 2;
+        child.y = stageH / 2;
     }
 
     /**

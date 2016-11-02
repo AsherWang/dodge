@@ -61,6 +61,12 @@ var Main = (function (_super) {
      */
     p.onResourceLoadComplete = function (event) {
         if (event.groupName == "preload") {
+            RES.loadGroup("ui");
+        }
+        if (event.groupName == "ui") {
+            RES.loadGroup("enemy");
+        }
+        else if (event.groupName == "enemy") {
             this.stage.removeChild(this.loadingView);
             RES.removeEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onResourceLoadComplete, this);
             RES.removeEventListener(RES.ResourceEvent.GROUP_LOAD_ERROR, this.onResourceLoadError, this);
@@ -101,52 +107,66 @@ var Main = (function (_super) {
      * Create a game scene
      */
     p.createGameScene = function () {
-        var sky = this.createBitmapByName("bg_jpg");
-        this.addChild(sky);
         var stageW = this.stage.stageWidth;
         var stageH = this.stage.stageHeight;
-        sky.width = stageW;
-        sky.height = stageH;
-        var topMask = new egret.Shape();
-        topMask.graphics.beginFill(0x000000, 0.5);
-        topMask.graphics.drawRect(0, 0, stageW, 172);
-        topMask.graphics.endFill();
-        topMask.y = 33;
-        this.addChild(topMask);
-        var icon = this.createBitmapByName("egret_icon_png");
-        this.addChild(icon);
-        icon.x = 26;
-        icon.y = 33;
-        var line = new egret.Shape();
-        line.graphics.lineStyle(2, 0xffffff);
-        line.graphics.moveTo(0, 0);
-        line.graphics.lineTo(0, 117);
-        line.graphics.endFill();
-        line.x = 172;
-        line.y = 61;
-        this.addChild(line);
-        var colorLabel = new egret.TextField();
-        colorLabel.textColor = 0xffffff;
-        colorLabel.width = stageW - 172;
-        colorLabel.textAlign = "center";
-        colorLabel.text = "Hello Egret";
-        colorLabel.size = 24;
-        colorLabel.x = 172;
-        colorLabel.y = 80;
-        this.addChild(colorLabel);
-        var textfield = new egret.TextField();
-        this.addChild(textfield);
-        textfield.alpha = 0;
-        textfield.width = stageW - 172;
-        textfield.textAlign = egret.HorizontalAlign.CENTER;
-        textfield.size = 24;
-        textfield.textColor = 0xffffff;
-        textfield.x = 172;
-        textfield.y = 135;
-        this.textfield = textfield;
+        this.welcomeSceneView = new WelcomeScene();
+        this.welcomeSceneView.height = stageH / 2;
+        this.makeChildCenter(this.welcomeSceneView, stageW, stageH);
+        this.stage.addChild(this.welcomeSceneView);
+        this.welcomeSceneView.addEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
         //根据name关键字，异步获取一个json配置文件，name属性请参考resources/resource.json配置文件的内容。
         // Get asynchronously a json configuration file according to name keyword. As for the property of name please refer to the configuration file of resources/resource.json.
-        RES.getResAsync("description_json", this.startAnimation, this);
+        //RES.getResAsync("description_json", this.startAnimation, this)
+    };
+    //游戏开始
+    p.OnGameStart = function (evt) {
+        this.welcomeSceneView.removeEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
+        this.stage.removeChild(this.welcomeSceneView);
+        if (!this.mainSceneView) {
+            this.mainSceneView = new MainScene();
+        }
+        var stageW = this.stage.stageWidth;
+        var stageH = this.stage.stageHeight;
+        this.mainSceneView.height = stageH;
+        this.mainSceneView.width = stageW;
+        this.makeChildCenter(this.mainSceneView, stageW, stageH);
+        this.stage.addChild(this.mainSceneView);
+        this.mainSceneView.run();
+        //添加事件监听,包括游戏结束,游戏暂停,游戏恢复
+        this.mainSceneView.addEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
+        this.mainSceneView.addEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.addEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+    };
+    //游戏结束
+    p.OnGameOver = function (evt) {
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+        this.stage.removeChild(this.mainSceneView);
+        var stageW = this.stage.stageWidth;
+        var stageH = this.stage.stageHeight;
+        if (!this.scoreBoard) {
+            this.scoreBoard = new ScoreBoard(stageW, stageH);
+        }
+        this.makeChildCenter(this.scoreBoard, stageW, stageH);
+        this.stage.addChild(this.scoreBoard);
+    };
+    //游戏暂停
+    p.OnGamePause = function (evt) {
+        //应该不需要删除这个事件绑定,看情况
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+    };
+    //游戏恢复
+    p.OnGameResume = function (evt) {
+        //应该不需要删除这个事件绑定,看情况
+        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+    };
+    //使其居中
+    p.makeChildCenter = function (child, stageW, stageH) {
+        child.anchorOffsetX = child.width / 2;
+        child.anchorOffsetY = child.height / 2;
+        child.x = stageW / 2;
+        child.y = stageH / 2;
     };
     /**
      * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
@@ -192,6 +212,14 @@ var Main = (function (_super) {
      */
     p.changeDescription = function (textfield, textFlow) {
         textfield.textFlow = textFlow;
+    };
+    /**
+     * 加载进度界面
+     * Process interface loading
+     */
+    Main.Size = {
+        height: 0,
+        weidth: 0
     };
     return Main;
 }(egret.DisplayObjectContainer));

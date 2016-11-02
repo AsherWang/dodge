@@ -55,7 +55,27 @@
     <Content Include="libs\modules\tween\tween.js" />
     <Content Include="libs\modules\tween\tween.min.js" />
     <Content Include="resource\assets\bg.jpg" />
+    <Content Include="resource\assets\bkg\1.png" />
     <Content Include="resource\assets\egret_icon.png" />
+    <Content Include="resource\assets\enemy\deer\1.png" />
+    <Content Include="resource\assets\enemy\deer\2.png" />
+    <Content Include="resource\assets\enemy\deer\3.png" />
+    <Content Include="resource\assets\enemy\deer\4.png" />
+    <Content Include="resource\assets\enemy\deer\5.png" />
+    <Content Include="resource\assets\hero\run1.png" />
+    <Content Include="resource\assets\hero\run2.png" />
+    <Content Include="resource\assets\hero\run3.png" />
+    <Content Include="resource\assets\hero\run4.png" />
+    <Content Include="resource\assets\hero\skill11.png" />
+    <Content Include="resource\assets\hero\skill12.png" />
+    <Content Include="resource\assets\hero\skill13.png" />
+    <Content Include="resource\assets\hero\skill14.png" />
+    <Content Include="resource\assets\hero\skill15.png" />
+    <Content Include="resource\assets\hero\skill16.png" />
+    <Content Include="resource\assets\player\flappybird\1.png" />
+    <Content Include="resource\assets\player\flappybird\2.png" />
+    <Content Include="resource\assets\player\flappybird\3.png" />
+    <Content Include="resource\assets\ui\pause.png" />
     <Content Include="template\runtime\native_loader.js" />
     <Content Include="template\runtime\native_require.js" />
     <Content Include="template\runtime\runtime_loader.js" />
@@ -77,9 +97,22 @@
     <TypeScriptCompile Include="libs\modules\game\game.d.ts" />
     <TypeScriptCompile Include="libs\modules\res\res.d.ts" />
     <TypeScriptCompile Include="libs\modules\tween\tween.d.ts" />
-    <TypeScriptCompile Include="src\LoadingUI.ts" />
+    <TypeScriptCompile Include="src\Entities\Deer.ts" />
+    <TypeScriptCompile Include="src\Entities\EntityFactory.ts" />
+    <TypeScriptCompile Include="src\Entities\GameObject.ts" />
+    <TypeScriptCompile Include="src\Entities\Hero.ts" />
+    <TypeScriptCompile Include="src\KeyboardController.ts" />
+    <TypeScriptCompile Include="src\Entities\Player.ts" />
+    <TypeScriptCompile Include="src\Entities\Enemy.ts" />
+    <TypeScriptCompile Include="src\Entities\Item.ts" />
+    <TypeScriptCompile Include="src\Events\Event.ts" />
+    <TypeScriptCompile Include="src\Views\LoadingUI.ts" />
     <TypeScriptCompile Include="src\Main.ts" />
+    <TypeScriptCompile Include="src\Views\ScoreBoard.ts" />
+    <TypeScriptCompile Include="src\Views\WelcomeScene.ts" />
+    <TypeScriptCompile Include="src\Views\MainScene.ts" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <PropertyGroup>
