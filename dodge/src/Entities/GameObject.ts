@@ -4,7 +4,8 @@
         private img: egret.Bitmap;
         private animateTimer: egret.Timer;
 
-        public blood: number = 10;
+        public MAXHP: number = 100; //血量上限
+        public HP: number = 100;  //血量
         public speedX: number = 0;
         public speedY: number = 0;
         public realWidth: number;

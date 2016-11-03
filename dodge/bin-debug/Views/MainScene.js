@@ -3,6 +3,7 @@ var MainScene = (function (_super) {
     __extends(MainScene, _super);
     function MainScene() {
         _super.call(this);
+        this.time = 0; //当局游戏时间
         this.enemies = [];
         this.bkgSpeed = 2; //背景速度
         this._lastTime = 0;
@@ -40,8 +41,6 @@ var MainScene = (function (_super) {
             RES.getRes("player_flappybird_3")
         ];
         this.player = new dodge.Player(playerRes);
-        this.player.y = this.height / 2;
-        this.player.x = this.width / 2 - this.player.width / 2;
         this.addChild(this.player);
         this.createUI();
         //工厂初始化
@@ -52,12 +51,26 @@ var MainScene = (function (_super) {
                 RES.getRes("enemy_deer_3"),
                 RES.getRes("enemy_deer_4"),
                 RES.getRes("enemy_deer_5")
+            ],
+            "medicine": [
+                RES.getRes("item_medicine_hp")
+            ],
+            "bubble": [
+                RES.getRes("item_poison_bubble")
             ]
         };
-        this.putAnEnemy();
+        this.timer = new egret.Timer(1000, 0);
+        this.timer.addEventListener(egret.TimerEvent.TIMER, this.timeToGenerateMonster, this);
         //键盘控制
         this.keyboardController = new dodge.KeyboardController();
         this.keyboardController.listen();
+    };
+    p.timeToGenerateMonster = function (evt) {
+        this.time++;
+        if (this.time % 3 == 0) {
+            this.putAnEnemy();
+        }
+        this.updateUI();
     };
     p.createBkg = function () {
         var texture = RES.getRes("bkg1");
@@ -79,19 +92,72 @@ var MainScene = (function (_super) {
         this.btnPause.x = 10;
         this.btnPause.y = 10;
         this.btnPause.pixelHitTest = true;
-        this.addChild(this.btnPause);
+        //this.addChild(this.btnPause);  //先不加暂停
+        this.timeSign = new egret.TextField();
+        this.timeSign.x = this.width - 30;
+        this.timeSign.y = 20;
+        this.timeSign.text = "00:00";
+        this.timeSign.anchorOffsetX = this.timeSign.width;
+        this.addChild(this.timeSign);
+        this.HPSign = new egret.Shape();
+        this.HPSign.x = 20;
+        this.HPSign.y = this.height - 50;
+        this.HPSign.alpha = 0.8;
+        this.addChild(this.HPSign);
+        //this.HPSign.anchorOffsetX = 50;//3、锚点居于左上角x轴 50 像素的位置
         //监听事件
-        this.btnPause.touchEnabled = true;
-        this.btnPause.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onPause, this);
+        // this.btnPause.touchEnabled = true;
+        //this.btnPause.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onPause, this);
+        this.updateUI();
+    };
+    p.Reiniti = function () {
+        //遍历回收所有怪物
+        for (var i = 0; i < this.enemies.length; i++) {
+            var enemy = this.enemies[i];
+            enemy.reclaim();
+            this.removeChild(enemy);
+        }
+        this.enemies = [];
+        this.player.y = this.height / 2;
+        this.player.x = this.width / 2 - this.player.width / 2;
+        this.player.HP = this.player.MAXHP;
+        //创建这些图片，并设置y坐标，让它们连接起来
+        for (var i = 0; i < this.bkg.length; i++) {
+            var bgBmp = this.bkg[i];
+            bgBmp.y = 0;
+            bgBmp.x = bgBmp.texture.textureWidth * i;
+        }
+        this.updateUI();
+    };
+    p.updateUI = function () {
+        this.timeSign.text = dodge.Utils.timeFormat(this.time);
+        this.HPSign.graphics.clear();
+        this.HPSign.graphics.lineStyle(1, 0x333333);
+        this.HPSign.graphics.drawRect(0, 0, this.width / 2, 32);
+        this.HPSign.graphics.beginFill(0xff7777);
+        this.HPSign.graphics.drawRect(1, 1, this.width / 2 * this.player.HP / this.player.MAXHP, 30);
+        this.HPSign.graphics.endFill();
     };
     p.onPause = function (evt) {
-        //
-        console.log("快暂停啊");
+        this.stopAllAnimation();
+        this.timer.stop();
+    };
+    p.stopAllAnimation = function () {
+        this.removeEventListener(egret.Event.ENTER_FRAME, this.enterFrame, this);
+        this.enemies.forEach(function (item) { item.stopAnimate(); });
+        this.player.stopAnimate();
+        this.hero.stopAnimate();
+    };
+    p.startAllAnimation = function () {
+        this.addEventListener(egret.Event.ENTER_FRAME, this.enterFrame, this);
+        this.enemies.forEach(function (item) { item.startAnimate(); });
+        this.player.startAnimate();
+        this.hero.startAnimate();
     };
     //在右边产生一个怪物
     p.putAnEnemy = function () {
         var deer = dodge.EntityFactory.produce(dodge.Deer, "deer");
-        deer.y = this.height / 2;
+        deer.y = dodge.Utils.getRandomValue(this.height, 6) + deer.realHeight;
         deer.x = this.width + 300;
         deer.anchorOffsetX = deer.width / 2;
         deer.anchorOffsetY = deer.height / 2;
@@ -101,20 +167,18 @@ var MainScene = (function (_super) {
         deer.startAnimate();
     };
     //分发消息,下通知说游戏已经结束
-    p.OnGameOver = function (evt) {
-        this.removeEventListener(egret.Event.ENTER_FRAME, this.enterFrame, this);
-        this.player.stopAnimate();
-        this.hero.stopAnimate();
-        this.enemies.forEach(function (item) { item.stopAnimate(); });
-        this.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.OnGameOver, this);
+    p.gameOver = function () {
+        this.stopAllAnimation();
+        this.timer.stop();
         var OnOverEvent = new GameEvent(GameEvent.Event.OnGameOver);
         this.dispatchEvent(OnOverEvent);
     };
     //开始运行游戏
     p.run = function () {
-        this.addEventListener(egret.Event.ENTER_FRAME, this.enterFrame, this);
-        this.player.startAnimate();
-        this.hero.startAnimate();
+        this.Reiniti();
+        this.startAllAnimation();
+        this.timer.start();
+        this.time = 0;
     };
     //每帧更新画面,并且计算碰撞和回收跑出屏幕外的东西
     p.enterFrame = function (evt) {
@@ -163,6 +227,11 @@ var MainScene = (function (_super) {
                 i--;
             }
         }
+        //检查是否死亡了
+        if (this.player.HP <= 0) {
+            this.gameOver();
+        }
+        this.updateUI();
     };
     return MainScene;
 }(egret.Sprite));

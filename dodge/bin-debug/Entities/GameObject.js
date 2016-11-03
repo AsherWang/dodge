@@ -5,7 +5,8 @@ var dodge;
         function GameObject(textures) {
             _super.call(this);
             this.isDdbug = false;
-            this.blood = 10;
+            this.MAXHP = 100; //血量上限
+            this.HP = 100; //血量
             this.speedX = 0;
             this.speedY = 0;
             this.currentImgIndex = 0; //当前显示的图片

@@ -122,14 +122,17 @@ var Main = (function (_super) {
     p.OnGameStart = function (evt) {
         this.welcomeSceneView.removeEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
         this.stage.removeChild(this.welcomeSceneView);
+        this.gameStart();
+    };
+    p.OnGameRestart = function (evt) {
+        //this.scoreBoard.removeEventListener(GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
+        this.stage.removeChild(this.scoreBoard);
+        this.gameStart();
+    };
+    p.gameStart = function () {
         if (!this.mainSceneView) {
             this.mainSceneView = new MainScene();
         }
-        var stageW = this.stage.stageWidth;
-        var stageH = this.stage.stageHeight;
-        this.mainSceneView.height = stageH;
-        this.mainSceneView.width = stageW;
-        this.makeChildCenter(this.mainSceneView, stageW, stageH);
         this.stage.addChild(this.mainSceneView);
         this.mainSceneView.run();
         //添加事件监听,包括游戏结束,游戏暂停,游戏恢复
@@ -150,6 +153,7 @@ var Main = (function (_super) {
         }
         this.makeChildCenter(this.scoreBoard, stageW, stageH);
         this.stage.addChild(this.scoreBoard);
+        this.scoreBoard.addEventListener(GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
     };
     //游戏暂停
     p.OnGamePause = function (evt) {
@@ -167,51 +171,6 @@ var Main = (function (_super) {
         child.anchorOffsetY = child.height / 2;
         child.x = stageW / 2;
         child.y = stageH / 2;
-    };
-    /**
-     * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
-     * Create a Bitmap object according to name keyword.As for the property of name please refer to the configuration file of resources/resource.json.
-     */
-    p.createBitmapByName = function (name) {
-        var result = new egret.Bitmap();
-        var texture = RES.getRes(name);
-        result.texture = texture;
-        return result;
-    };
-    /**
-     * 描述文件加载成功，开始播放动画
-     * Description file loading is successful, start to play the animation
-     */
-    p.startAnimation = function (result) {
-        var self = this;
-        var parser = new egret.HtmlTextParser();
-        var textflowArr = [];
-        for (var i = 0; i < result.length; i++) {
-            textflowArr.push(parser.parser(result[i]));
-        }
-        var textfield = self.textfield;
-        var count = -1;
-        var change = function () {
-            count++;
-            if (count >= textflowArr.length) {
-                count = 0;
-            }
-            var lineArr = textflowArr[count];
-            self.changeDescription(textfield, lineArr);
-            var tw = egret.Tween.get(textfield);
-            tw.to({ "alpha": 1 }, 200);
-            tw.wait(2000);
-            tw.to({ "alpha": 0 }, 200);
-            tw.call(change, self);
-        };
-        change();
-    };
-    /**
-     * 切换描述内容
-     * Switch to described content
-     */
-    p.changeDescription = function (textfield, textFlow) {
-        textfield.textFlow = textFlow;
     };
     /**
      * 加载进度界面

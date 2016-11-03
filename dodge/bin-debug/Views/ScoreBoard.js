@@ -24,6 +24,12 @@ var ScoreBoard = (function (_super) {
         this.board.textAlign = "center";
         this.board.width = this.width;
         this.addChild(this.board);
+        this.btnContinue.touchEnabled = true;
+        this.btnContinue.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onContinue, this);
+    };
+    p.onContinue = function (evt) {
+        var OnStartEvent = new GameEvent(GameEvent.Event.OnGameRestart);
+        this.dispatchEvent(OnStartEvent);
     };
     p.getTextField = function (text) {
         var ret = new egret.TextField();

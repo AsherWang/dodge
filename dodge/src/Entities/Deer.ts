@@ -9,7 +9,10 @@ module dodge {
         }
 
         public effectOnPlayer(player: dodge.Player): void {
-            console.log("撞上了小鹿");
+            var realHarm = player.getHurt(5);
+            if (realHarm>0)
+                console.log("deer hurt our player by " + realHarm + "HP");
+
         }
     }
 }

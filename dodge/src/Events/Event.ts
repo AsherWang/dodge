@@ -5,6 +5,7 @@
         OnGameOver: "OnGameOver",
         OnGamePause: "OnGamePause",
         OnGameResume: "OnGameResume",
+        OnGameRestart: "OnGameRestart",
         OnKeyDown: "OnKeyDown",
         OnKeyUp:"OnKeyUp"
     }

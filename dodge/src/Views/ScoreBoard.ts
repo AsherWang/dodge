@@ -31,8 +31,18 @@
         this.board.width = this.width;
         this.addChild(this.board);
 
-   
+
+        this.btnContinue.touchEnabled = true;
+        this.btnContinue.addEventListener(egret.TouchEvent.TOUCH_TAP,this.onContinue,this);
     }
+
+
+    private onContinue(evt: egret.TouchEvent) {
+        var OnStartEvent: GameEvent = new GameEvent(GameEvent.Event.OnGameRestart);
+        this.dispatchEvent(OnStartEvent);
+    }
+
+
 
     private getTextField(text: string) {
         var ret: egret.TextField = new egret.TextField();
@@ -79,7 +89,8 @@
             ,{ text: "得分:44\n" }
             ,{ text: "回血:33\n" }
             ,{ text: "受伤次数:233\n" }
-            ,{ text: "排名:1000" }
+            , { text: "排名:1000" }
+            , { text: "备注:目前这些都是乱写的" }
 
         ];
     }

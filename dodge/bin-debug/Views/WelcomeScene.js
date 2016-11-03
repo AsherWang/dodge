@@ -42,7 +42,6 @@ var WelcomeScene = (function (_super) {
     };
     //分发消息,下通知说游戏已经开始
     p.OnGameStart = function (evt) {
-        this.btnStart.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.OnGameStart, this);
         var OnStartEvent = new GameEvent(GameEvent.Event.OnGameStart);
         this.dispatchEvent(OnStartEvent);
     };

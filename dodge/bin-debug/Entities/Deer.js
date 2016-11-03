@@ -11,7 +11,9 @@ var dodge;
         }
         var d = __define,c=Deer,p=c.prototype;
         p.effectOnPlayer = function (player) {
-            console.log("撞上了小鹿");
+            var realHarm = player.getHurt(5);
+            if (realHarm > 0)
+                console.log("deer hurt our player by " + realHarm + "HP");
         };
         return Deer;
     }(dodge.GameObject));

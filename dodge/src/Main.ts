@@ -147,16 +147,22 @@ class Main extends egret.DisplayObjectContainer {
 
     //游戏开始
     private OnGameStart(evt: GameEvent) {
-        this.welcomeSceneView.removeEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
+       this.welcomeSceneView.removeEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
         this.stage.removeChild(this.welcomeSceneView);
+        this.gameStart();
+    }
+
+    private OnGameRestart(evt: GameEvent) {
+        //this.scoreBoard.removeEventListener(GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
+        this.stage.removeChild(this.scoreBoard);
+        this.gameStart();
+    }
+    private gameStart() {
+ 
         if (!this.mainSceneView) {
             this.mainSceneView = new MainScene();
         }
-        var stageW: number = this.stage.stageWidth;
-        var stageH: number = this.stage.stageHeight;
-        this.mainSceneView.height = stageH;
-        this.mainSceneView.width = stageW;
-        this.makeChildCenter(this.mainSceneView, stageW, stageH);
+
         this.stage.addChild(this.mainSceneView);
         this.mainSceneView.run();
 
@@ -164,8 +170,8 @@ class Main extends egret.DisplayObjectContainer {
         this.mainSceneView.addEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
         this.mainSceneView.addEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
         this.mainSceneView.addEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
-        
     }
+
 
     //游戏结束
     private OnGameOver(evt: GameEvent) {
@@ -184,6 +190,8 @@ class Main extends egret.DisplayObjectContainer {
 
 
         this.stage.addChild(this.scoreBoard);
+        this.scoreBoard.addEventListener(GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
+
 
     }
 
@@ -202,10 +210,6 @@ class Main extends egret.DisplayObjectContainer {
 
         //应该不需要删除这个事件绑定,看情况
         this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
-
-
-
-
     }
 
 
@@ -217,58 +221,7 @@ class Main extends egret.DisplayObjectContainer {
         child.y = stageH / 2;
     }
 
-    /**
-     * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
-     * Create a Bitmap object according to name keyword.As for the property of name please refer to the configuration file of resources/resource.json.
-     */
-    private createBitmapByName(name:string):egret.Bitmap {
-        var result = new egret.Bitmap();
-        var texture:egret.Texture = RES.getRes(name);
-        result.texture = texture;
-        return result;
-    }
-
-    /**
-     * 描述文件加载成功，开始播放动画
-     * Description file loading is successful, start to play the animation
-     */
-    private startAnimation(result:Array<any>):void {
-        var self:any = this;
-
-        var parser = new egret.HtmlTextParser();
-        var textflowArr:Array<Array<egret.ITextElement>> = [];
-        for (var i:number = 0; i < result.length; i++) {
-            textflowArr.push(parser.parser(result[i]));
-        }
-
-        var textfield = self.textfield;
-        var count = -1;
-        var change:Function = function () {
-            count++;
-            if (count >= textflowArr.length) {
-                count = 0;
-            }
-            var lineArr = textflowArr[count];
-
-            self.changeDescription(textfield, lineArr);
-
-            var tw = egret.Tween.get(textfield);
-            tw.to({"alpha": 1}, 200);
-            tw.wait(2000);
-            tw.to({"alpha": 0}, 200);
-            tw.call(change, self);
-        };
-
-        change();
-    }
-
-    /**
-     * 切换描述内容
-     * Switch to described content
-     */
-    private changeDescription(textfield:egret.TextField, textFlow:Array<egret.ITextElement>):void {
-        textfield.textFlow = textFlow;
-    }
+    
 }
 
 

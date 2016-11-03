@@ -5,7 +5,7 @@
       "name": "preload"
     },
     {
-      "keys": "enemy_deer_1,enemy_deer_2,enemy_deer_3,enemy_deer_4,enemy_deer_5,hero_run1,hero_run2,hero_run3,hero_run4,hero_skill1_1,hero_skill1_2,hero_skill1_3,hero_skill1_4,hero_skill1_5,hero_skill1_6",
+      "keys": "enemy_deer_1,enemy_deer_2,enemy_deer_3,enemy_deer_4,enemy_deer_5,hero_run1,hero_run2,hero_run3,hero_run4,hero_skill1_1,hero_skill1_2,hero_skill1_3,hero_skill1_4,hero_skill1_5,hero_skill1_6,item_medicine_hp,item_poison_bubble",
       "name": "enemy"
     },
     {
@@ -129,6 +129,16 @@
       "name": "hero_skill1_6",
       "type": "image",
       "url": "assets/hero/skill16.png"
+    },
+    {
+      "name": "item_medicine_hp",
+      "type": "image",
+      "url": "assets/item/medicine_hp.png"
+    },
+    {
+      "name": "item_poison_bubble",
+      "type": "image",
+      "url": "assets/item/poison_bubble.png#"
     }
 
 

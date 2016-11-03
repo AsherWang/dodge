@@ -62,6 +62,7 @@
     <Content Include="resource\assets\enemy\deer\3.png" />
     <Content Include="resource\assets\enemy\deer\4.png" />
     <Content Include="resource\assets\enemy\deer\5.png" />
+    <Content Include="resource\assets\hero\head.png" />
     <Content Include="resource\assets\hero\run1.png" />
     <Content Include="resource\assets\hero\run2.png" />
     <Content Include="resource\assets\hero\run3.png" />
@@ -72,6 +73,8 @@
     <Content Include="resource\assets\hero\skill14.png" />
     <Content Include="resource\assets\hero\skill15.png" />
     <Content Include="resource\assets\hero\skill16.png" />
+    <Content Include="resource\assets\item\medicine_hp.png" />
+    <Content Include="resource\assets\item\poison_bubble.png" />
     <Content Include="resource\assets\player\flappybird\1.png" />
     <Content Include="resource\assets\player\flappybird\2.png" />
     <Content Include="resource\assets\player\flappybird\3.png" />
@@ -101,11 +104,12 @@
     <TypeScriptCompile Include="src\Entities\EntityFactory.ts" />
     <TypeScriptCompile Include="src\Entities\GameObject.ts" />
     <TypeScriptCompile Include="src\Entities\Hero.ts" />
+    <TypeScriptCompile Include="src\Entities\Medicine.ts" />
     <TypeScriptCompile Include="src\KeyboardController.ts" />
     <TypeScriptCompile Include="src\Entities\Player.ts" />
-    <TypeScriptCompile Include="src\Entities\Enemy.ts" />
     <TypeScriptCompile Include="src\Entities\Item.ts" />
     <TypeScriptCompile Include="src\Events\Event.ts" />
+    <TypeScriptCompile Include="src\Utils\Utils.ts" />
     <TypeScriptCompile Include="src\Views\LoadingUI.ts" />
     <TypeScriptCompile Include="src\Main.ts" />
     <TypeScriptCompile Include="src\Views\ScoreBoard.ts" />

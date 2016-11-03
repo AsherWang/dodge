@@ -58,7 +58,6 @@ class WelcomeScene extends egret.Sprite {
 
     //分发消息,下通知说游戏已经开始
     private OnGameStart(evt: egret.TouchEvent) {
-        this.btnStart.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.OnGameStart, this);
         var OnStartEvent: GameEvent = new GameEvent(GameEvent.Event.OnGameStart);
         this.dispatchEvent(OnStartEvent);
     }
