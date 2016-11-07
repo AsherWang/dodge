@@ -7,10 +7,10 @@ module dodge {
         }
 
         public effectOnPlayer(player: dodge.Player): void {
-            var realRecovery  = player.getHealed(20);
+            var realRecovery  = player.getHealed(20,this);
             if (realRecovery > 0)
                 console.log("medicine heals our player by " + realRecovery + "HP");
-
+            this.readyToReclaim = true;
         }
     }
 }

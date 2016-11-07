@@ -173,7 +173,7 @@ class MainScene extends egret.Sprite {
             bgBmp.x = bgBmp.texture.textureWidth * i;
         }
 
-
+        this.time = 0;
         this.updateUI();
 
     }
@@ -208,11 +208,16 @@ class MainScene extends egret.Sprite {
         this.hero.startAnimate();
     }
 
-    //在右边产生一个怪物
+    //随机产生一个怪物
     private putAnEnemy() {
-       
+        dodge.Utils.getRandomElement([this.putADeer, this.putAHubble, this.putAMedicine]).apply(this);
+    }
+
+
+    //放一只小鹿
+    private putADeer() {
         var deer = dodge.EntityFactory.produce<dodge.Deer>(dodge.Deer, "deer");
-        deer.y = dodge.Utils.getRandomValue(this.height, 6) + deer.realHeight;
+        deer.y = dodge.Utils.getRandomValue(this.height, 6) - deer.realHeight/2;
         deer.x = this.width + 300;
         deer.anchorOffsetX = deer.width / 2;
         deer.anchorOffsetY = deer.height / 2;
@@ -222,6 +227,28 @@ class MainScene extends egret.Sprite {
         deer.startAnimate();
     }
 
+    private putAHubble() {
+        var med = dodge.EntityFactory.produce<dodge.Bubble>(dodge.Bubble, "bubble");
+        med.y = this.height+100;
+        med.x = dodge.Utils.getRandomValue(this.width, 6) + med.realWidth;
+        med.anchorOffsetX = med.width / 2;
+        med.anchorOffsetY = med.height / 2;
+        med.speedY = -3;
+        this.addChildAt(med, this.bkg.length);
+        this.enemies.push(med);
+    }
+
+    private putAMedicine() {
+        var med = dodge.EntityFactory.produce<dodge.Medicine>(dodge.Medicine, "medicine");
+        med.y = 30;
+        med.x = dodge.Utils.getRandomValue(this.width, 6) + med.realWidth;
+        med.anchorOffsetX = med.width / 2;
+        med.anchorOffsetY = med.height / 2;
+        med.speedY = 2;
+        this.addChildAt(med, this.bkg.length);
+        this.enemies.push(med);
+        //med.startAnimate(); //因为药品的资源只有一个所以没必要开计时器了
+    }
 
     //分发消息,下通知说游戏已经结束
     private gameOver() {
@@ -237,7 +264,6 @@ class MainScene extends egret.Sprite {
         this.Reiniti();
         this.startAllAnimation();
         this.timer.start();
-        this.time = 0;
     }
 
 
@@ -293,6 +319,8 @@ class MainScene extends egret.Sprite {
                 i--;
             }
         }
+
+        //this.hero.updatePostion(speedOffset);//试试看
 
 
         //检查是否死亡了

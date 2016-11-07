@@ -20,8 +20,19 @@
 
 
         public static getRandomValue(sum: number, num: number): number {
-            return sum * Math.floor(Math.random()*(num - 1))/num;
+            return sum * Math.floor(Math.random()*(num-1)+1)/num;
         }
 
+
+        //返回区间中一个随机值
+        public static getRandom(min: number, max: number): number{
+            return Math.floor(Math.random()*(max - min))+min;
+        }
+
+
+        //返回数组中一个随机元素
+        public static getRandomElement(container: any): any{
+            return container[Math.floor(Math.random() * container.length)];
+        }
     }
 }

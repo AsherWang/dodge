@@ -100,6 +100,7 @@
     <TypeScriptCompile Include="libs\modules\game\game.d.ts" />
     <TypeScriptCompile Include="libs\modules\res\res.d.ts" />
     <TypeScriptCompile Include="libs\modules\tween\tween.d.ts" />
+    <TypeScriptCompile Include="src\Entities\Bubble.ts" />
     <TypeScriptCompile Include="src\Entities\Deer.ts" />
     <TypeScriptCompile Include="src\Entities\EntityFactory.ts" />
     <TypeScriptCompile Include="src\Entities\GameObject.ts" />
@@ -109,6 +110,7 @@
     <TypeScriptCompile Include="src\Entities\Player.ts" />
     <TypeScriptCompile Include="src\Entities\Item.ts" />
     <TypeScriptCompile Include="src\Events\Event.ts" />
+    <TypeScriptCompile Include="src\Recorder.ts" />
     <TypeScriptCompile Include="src\Utils\Utils.ts" />
     <TypeScriptCompile Include="src\Views\LoadingUI.ts" />
     <TypeScriptCompile Include="src\Main.ts" />

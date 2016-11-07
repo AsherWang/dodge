@@ -4,14 +4,16 @@
         private img: egret.Bitmap;
         private animateTimer: egret.Timer;
 
+
         public MAXHP: number = 100; //血量上限
         public HP: number = 100;  //血量
         public speedX: number = 0;
         public speedY: number = 0;
         public realWidth: number;
         public realHeight: number;
+        public triggerInvincible: boolean = false;
 
-
+        protected readyToReclaim: boolean = false;
         protected currentImgIndex: number = 0;  //当前显示的图片
         protected textureList: any = [];  //所有动作的图片
 
@@ -33,7 +35,7 @@
 
         //停下动作
         public stopAnimate() {
-            this.animateTimer.stop();
+            if (this.animateTimer)this.animateTimer.stop();
         }
 
 
@@ -80,12 +82,13 @@
 
         //把自己销毁掉(假装)
         public reclaim() {
-            dodge.EntityFactory.reclaim<GameObject>(this,this.name);
+            dodge.EntityFactory.reclaim<GameObject>(this, this.name);
+            this.readyToReclaim = false;  //下次从对象池里边取出来的时候这个得是false才行,不然刚出来就被ReClaim掉了
         }
 
         //如果需要回收就回收了
         public checkReclaim(width, height) {
-            return (this.x + this.realWidth < -1000) || (this.x > width + 1000) || (this.y + this.realHeight < -1000) || (this.y + this.realHeight > height + 1000);
+            return this.readyToReclaim || (this.x + this.realWidth < -1000) || (this.x > width + 1000) || (this.y + this.realHeight < -1000) || (this.y + this.realHeight > height + 1000);
         }
 
     }

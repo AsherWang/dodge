@@ -9,7 +9,7 @@ module dodge {
             super(textures);
             //this.realWidth = 70;
             //this.realHeight = 100;
-            //this.speedX = 8;
+            this.speedX = 3;
             //this.speedY = 8;
             this.name = "hero";
             this.isDdbug = true;
