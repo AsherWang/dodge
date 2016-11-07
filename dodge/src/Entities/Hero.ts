@@ -4,7 +4,7 @@ module dodge {
         private skill1TextureList: egret.Texture[];
         private fire: number = 0;
         private skill1cd :number = 30;
-        private timer: number = 0;
+        private skillTimer: number = 0;
         public constructor(textures: egret.Texture[]) {
             super(textures);
             //this.realWidth = 70;
@@ -22,10 +22,10 @@ module dodge {
 
         protected onAnimateTimer(evt: egret.Event) {
             super.onAnimateTimer(evt);
-            if (this.fire == 0) { this.timer++; }
-            if (this.timer == this.skill1cd) {
+            if (this.fire == 0) { this.skillTimer++; }
+            if (this.skillTimer == this.skill1cd) {
                 this.fire = 1;
-                this.timer = 0;
+                this.skillTimer = 0;
             }
             if (this.currentImgIndex == this.textureList.length - 1) {
                 if (this.fire == 1) {

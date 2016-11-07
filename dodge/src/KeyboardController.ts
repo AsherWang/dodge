@@ -19,10 +19,10 @@
         public listen() {
             var self = this;
             var acceptCode: Array<number> = [
-                 87, 38 //W,↑
-                ,83, 40 //S,↓
-                ,65, 37 //A,←
-                ,68, 39 //D,→
+                 87,// 38 //W,↑
+                ,83//, 40 //S,↓
+                ,65//, 37 //A,←
+                ,68//, 39 //D,→
             ]; //这里配置接受的按键
             document.onkeydown = function (event) {
                 var e = event || window.event || arguments.callee.caller.arguments[0];

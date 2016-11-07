@@ -4,12 +4,11 @@ module dodge {
         public constructor(textures: egret.Texture[]) {
             super(textures);
             this.name = "medicine";
+            this.basicHarm =-1; //加1血
         }
 
-        public effectOnPlayer(player: dodge.Player): void {
-            var realRecovery  = player.getHealed(20,this);
-            if (realRecovery > 0)
-                console.log("medicine heals our player by " + realRecovery + "HP");
+
+        public afterHarm(){
             this.readyToReclaim = true;
         }
     }

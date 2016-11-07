@@ -38,10 +38,10 @@ class Main extends egret.DisplayObjectContainer {
         height: 0,
         weidth: 0
     };
-    private loadingView: LoadingUI;
-    private welcomeSceneView: WelcomeScene;
-    private mainSceneView: MainScene;
-    private scoreBoard: ScoreBoard;
+    private loadingView: dodge.LoadingUI;  //载入界面
+    private welcomeSceneView: dodge.WelcomeScene; //欢迎,开始界面
+    private mainSceneView: dodge.MainScene; //主游戏界面
+    private scoreBoard: dodge.ScoreBoard; //计分板
 
 
     public constructor() {
@@ -53,7 +53,7 @@ class Main extends egret.DisplayObjectContainer {
         //设置加载进度界面
         //Config to load process interface
 
-        this.loadingView = new LoadingUI();
+        this.loadingView = new dodge.LoadingUI();
         this.stage.addChild(this.loadingView);
         //初始化Resource资源加载库
         //initiate Resource loading library
@@ -132,12 +132,12 @@ class Main extends egret.DisplayObjectContainer {
     private createGameScene(): void {
         var stageW:number = this.stage.stageWidth;
         var stageH:number = this.stage.stageHeight;
-        this.welcomeSceneView = new WelcomeScene();
+        this.welcomeSceneView = new dodge.WelcomeScene();
         this.welcomeSceneView.height = stageH / 2;
         this.makeChildCenter(this.welcomeSceneView, stageW, stageH);
         this.stage.addChild(this.welcomeSceneView);
 
-        this.welcomeSceneView.addEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
+        this.welcomeSceneView.addEventListener(dodge.GameEvent.Event.OnGameStart, this.OnGameStart, this);
 
         //根据name关键字，异步获取一个json配置文件，name属性请参考resources/resource.json配置文件的内容。
         // Get asynchronously a json configuration file according to name keyword. As for the property of name please refer to the configuration file of resources/resource.json.
@@ -146,13 +146,13 @@ class Main extends egret.DisplayObjectContainer {
 
 
     //游戏开始
-    private OnGameStart(evt: GameEvent) {
-       this.welcomeSceneView.removeEventListener(GameEvent.Event.OnGameStart, this.OnGameStart, this);
+    private OnGameStart(evt: dodge.GameEvent) {
+       this.welcomeSceneView.removeEventListener(dodge.GameEvent.Event.OnGameStart, this.OnGameStart, this);
         this.stage.removeChild(this.welcomeSceneView);
         this.gameStart();
     }
 
-    private OnGameRestart(evt: GameEvent) {
+    private OnGameRestart(evt: dodge.GameEvent) {
         //this.scoreBoard.removeEventListener(GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
         this.stage.removeChild(this.scoreBoard);
         this.gameStart();
@@ -160,56 +160,56 @@ class Main extends egret.DisplayObjectContainer {
     private gameStart() {
  
         if (!this.mainSceneView) {
-            this.mainSceneView = new MainScene();
+            this.mainSceneView = new dodge.MainScene();
         }
 
         this.stage.addChild(this.mainSceneView);
         this.mainSceneView.run();
 
         //添加事件监听,包括游戏结束,游戏暂停,游戏恢复
-        this.mainSceneView.addEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
-        this.mainSceneView.addEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
-        this.mainSceneView.addEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+        this.mainSceneView.addEventListener(dodge.GameEvent.Event.OnGameOver, this.OnGameOver, this);
+        this.mainSceneView.addEventListener(dodge.GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.addEventListener(dodge.GameEvent.Event.OnGameResume, this.OnGameResume, this);
     }
 
 
     //游戏结束
-    private OnGameOver(evt: GameEvent) {
-        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameOver, this.OnGameOver, this);
-        this.mainSceneView.removeEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
-        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+    private OnGameOver(evt: dodge.GameEvent) {
+        this.mainSceneView.removeEventListener(dodge.GameEvent.Event.OnGameOver, this.OnGameOver, this);
+        this.mainSceneView.removeEventListener(dodge.GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.removeEventListener(dodge.GameEvent.Event.OnGameResume, this.OnGameResume, this);
 
         this.stage.removeChild(this.mainSceneView);
 
         var stageW: number = this.stage.stageWidth;
         var stageH: number = this.stage.stageHeight;
         if (!this.scoreBoard) {
-            this.scoreBoard = new ScoreBoard(stageW,stageH);
+            this.scoreBoard = new dodge.ScoreBoard(stageW,stageH);
         }
         this.makeChildCenter(this.scoreBoard, stageW,stageH);
 
 
         this.stage.addChild(this.scoreBoard);
-        this.scoreBoard.addEventListener(GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
+        this.scoreBoard.addEventListener(dodge.GameEvent.Event.OnGameRestart, this.OnGameRestart, this);
 
 
     }
 
     //游戏暂停
-    private OnGamePause(evt: GameEvent) {
+    private OnGamePause(evt: dodge.GameEvent) {
 
         //应该不需要删除这个事件绑定,看情况
-        this.mainSceneView.removeEventListener(GameEvent.Event.OnGamePause, this.OnGamePause, this);
+        this.mainSceneView.removeEventListener(dodge.GameEvent.Event.OnGamePause, this.OnGamePause, this);
 
 
 
     }
 
     //游戏恢复
-    private OnGameResume(evt: GameEvent) {
+    private OnGameResume(evt: dodge.GameEvent) {
 
         //应该不需要删除这个事件绑定,看情况
-        this.mainSceneView.removeEventListener(GameEvent.Event.OnGameResume, this.OnGameResume, this);
+        this.mainSceneView.removeEventListener(dodge.GameEvent.Event.OnGameResume, this.OnGameResume, this);
     }
 
 

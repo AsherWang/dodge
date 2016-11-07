@@ -7,15 +7,25 @@
 
         public MAXHP: number = 100; //血量上限
         public HP: number = 100;  //血量
+        public basicHarm:number = 0; //基础伤害
+
+
         public speedX: number = 0;
         public speedY: number = 0;
         public realWidth: number;
         public realHeight: number;
+
+
+
         public triggerInvincible: boolean = false;
+        public isInvincible: boolean = false;
+        protected timeHurt: number=1; //受伤之后短暂无敌秒数
+        protected timer: egret.Timer;
 
         protected readyToReclaim: boolean = false;
         protected currentImgIndex: number = 0;  //当前显示的图片
         protected textureList: any = [];  //所有动作的图片
+
 
         public constructor(textures: egret.Texture[]) {
             super();
@@ -24,6 +34,7 @@
             this.addChild(this.img);
             this.realHeight = this.img.height;
             this.realWidth = this.img.width;
+            this.timer = new egret.Timer(this.timeHurt*1000);
         }
 
         //开始动作
@@ -52,7 +63,7 @@
             this.y += this.speedY * speedRate;
         }
 
-        public checkHitPoint(player: dodge.Player): void {
+        public checkHitPoint(player: dodge.Player): boolean {
             var player_x1: number = player.x - player.width / 2;
             var player_y1: number  = player.y - player.height / 2;
             var player_x2: number  = player.x + player.width / 2;
@@ -60,12 +71,11 @@
             var self_x1: number = this.x - this.realWidth / 2;
             var self_y1: number = this.y - this.realHeight / 2;
 
-            if (this.hitPoint(player_x2, player_y1)
+            return this.hitPoint(player_x2, player_y1)
                 || this.hitPoint(player_x2, player_y2)
                 || this.hitPoint(player_x1, player_y1)
-                || this.hitPoint(player_x1, player_y2)){
-                this.effectOnPlayer(player);
-            }
+                || this.hitPoint(player_x1, player_y2);
+                
         }
 
 
@@ -78,6 +88,54 @@
 
         public effectOnPlayer(player: dodge.Player): void {
             console.log("撞上了");
+        }
+
+        //将要对某系东西造成伤害,所以获取伤害这个对象
+        public getHarm():dodge.Harm{
+            return new dodge.CommonHarm(this.basicHarm);
+        }
+
+        public afterHarm(harm:dodge.Harm):void{
+            //伤害别人之后的事情
+        }
+
+        public afterHuet(harm:dodge.Harm):void{
+            //受到伤害之后的事情
+        }
+
+        //受伤了,返回掉血量
+        public getHurt(harm: number, sender: dodge.GameObject): number {
+            var ret: number = 0;
+
+            if (!this.isInvincible || harm < 0) {  //如果是治疗就不免疫了
+                this.HP -= harm;
+                this.correctHP();
+                ret = harm;
+                if (sender.triggerInvincible && harm > 0) {  //治疗触发什么免疫
+                    this.isInvincible = true;
+                    if(!this.timer)this.timer=new egret.Timer(this.timeHurt*1000);
+                    this.timer.addEventListener(egret.TimerEvent.TIMER, this.onTimer, this);
+                    this.timer.start();
+                }
+            }
+            return ret;
+        }
+
+        //无敌时间到
+        private onTimer(evt: egret.Event) {
+            this.isInvincible = false;
+            this.timer.removeEventListener(egret.TimerEvent.TIMER, this.onTimer, this);
+        }
+
+
+        //修正HP的值,低于0就0,高于Max就Max
+        private correctHP(){
+            if(this.HP>this.MAXHP){
+                this.HP=this.MAXHP;
+            }
+            if(this.HP<0){
+                this.HP=0;
+            }
         }
 
         //把自己销毁掉(假装)

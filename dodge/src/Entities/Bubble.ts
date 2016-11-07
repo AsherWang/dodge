@@ -4,12 +4,10 @@ module dodge {
         public constructor(textures: egret.Texture[]) {
             super(textures);
             this.name = "bubble";
+            this.basicHarm = 1;
         }
 
-        public effectOnPlayer(player: dodge.Player): void {
-            var realHarm = player.getHurt(30,this);
-            if (realHarm > 0)
-                console.log("medicine harms our player by " + realHarm + "HP");
+        public afterHarm(){
             this.readyToReclaim = true;
         }
     }
