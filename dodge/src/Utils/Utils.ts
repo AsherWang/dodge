@@ -34,5 +34,7 @@
         public static getRandomElement(container: any): any{
             return container[Math.floor(Math.random() * container.length)];
         }
+
+        
     }
 }

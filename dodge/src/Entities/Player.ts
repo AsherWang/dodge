@@ -10,8 +10,8 @@ module dodge {
             this.speedY = 8;
             this.name = "player";
             
-            this.HP=3;
-            this.MAXHP=3;
+            this.HP=6;
+            this.MAXHP=6;
         }
 
         //治疗

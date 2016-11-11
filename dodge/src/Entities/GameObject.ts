@@ -37,6 +37,14 @@
             this.timer = new egret.Timer(this.timeHurt*1000);
         }
 
+        public getWidth():number{
+            return this.img.width;
+        }
+
+        public getHeight():number{
+            return this.img.height;
+        }
+
         //开始动作
         public startAnimate() {
             if (!this.animateTimer)this.animateTimer = new egret.Timer(100, 0);

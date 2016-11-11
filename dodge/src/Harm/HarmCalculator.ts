@@ -30,7 +30,6 @@ module dodge{
                 case dodge.Harm.Type.None:
                     //无属性伤害
                     harm.realHarm=reciver.getHurt(harm.basicHarm,sender);
-                    console.log("血量:"+realHarm);
                     break;
                 default:
                     //没见过的伤害,出bug了吧

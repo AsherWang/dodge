@@ -81,9 +81,11 @@ class Main extends egret.DisplayObjectContainer {
     private onResourceLoadComplete(event:RES.ResourceEvent):void {
         if (event.groupName == "preload") {
             RES.loadGroup("ui");
-        } if (event.groupName == "ui") {
+        }else if (event.groupName == "ui") {
             RES.loadGroup("enemy");
-        }else if(event.groupName == "enemy"){
+        }else if (event.groupName == "enemy") {
+            RES.loadGroup("map");
+        }else if(event.groupName == "map"){
             this.stage.removeChild(this.loadingView);
             RES.removeEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onResourceLoadComplete, this);
             RES.removeEventListener(RES.ResourceEvent.GROUP_LOAD_ERROR, this.onResourceLoadError, this);

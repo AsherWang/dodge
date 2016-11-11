@@ -1,157 +1,85 @@
 ﻿//游戏的主要操作界面
 module dodge{
     export class MainScene extends egret.Sprite {
-        private hero: dodge.Hero;  //只是为了好玩儿加的
-        private player: dodge.Player;
         private time: number=0; //当局游戏时间
-        private enemyFactory: dodge.EntityFactory;
-        private enemies: dodge.GameObject[]=[]; 
+        private distance:number=0; //前进的米数,主要指画面滚动的距离
+        
 
+        private player: dodge.Player; //玩家
+        private enemies: dodge.GameObject[]=[];  //障碍
+        private bkg:dodge.MainBackground; //背景
 
-        private bkg: egret.Bitmap[];  //背景
-        private bkgSpeed: number = 2;  //背景速度
-        private textureWidth: number;  //背景图的宽度
-
-        private timer: egret.Timer;  //随机出怪
-
-
-        private keyboardController: dodge.KeyboardController;
+        private keyboardController: dodge.KeyboardController;  //键盘控制器
         private _lastTime: any = 0;
 
+        private mainUI:dodge.MainUI; //UI
+        private map:dodge.MapReader; //地图
 
-        //UI部分,包括时间,里程,血量,暂停按钮
-        private btnPause: egret.Bitmap;  //暂停按钮
-        private timeSign: egret.TextField;  //时间
-        private score: egret.TextField;  //分数
-        private HPSign: egret.Shape;  //血条
+
+        //这俩值是为了使用游戏高度不同而做的调整
+        //游戏的宽度没什么问题,但是高度上应该有限制,目前定为50*10 也就是500px,这样出障碍物的时候可以根据格子的形式来计算合不合适
+        // top 和 bottom相差500,然后上下对称,两边则用贴图覆盖
+        public static battleHeighgt:number=500;
+        public static rectSize=50;
+        private static bkgSpeed: number = 2;  //背景速度,也就是前进速度
+        private static speedLevel:number=1;
+
+        //获取当前卷屏速度
+        public static getSpeed():number{ 
+            return MainScene.bkgSpeed * (1+MainScene.speedLevel*4);
+        }
+        private top:number; 
+        private bottom:number;
+        
+        
 
         public constructor() {
             super();
             this.createView();
         }
 
-        private textField: egret.TextField;
+        private upgradeSpeed():void{
+            if(this.distance>200*MainScene.speedLevel){
+                MainScene.speedLevel++;
+                console.log("speed up:"+MainScene.speedLevel);
+            }
+        }
 
         private createView(): void {
             
+            //将宽高设置成与屏幕相同
             this.height = egret.MainContext.instance.stage.stageHeight;
             this.width = egret.MainContext.instance.stage.stageWidth;
+            this.top=(this.height-MainScene.battleHeighgt)/2;
+            this.bottom=this.top+MainScene.battleHeighgt;
 
             //创建背景
-            this.createBkg();
+            this.bkg=new dodge.MainBackground();
+            this.addChild(this.bkg);
 
-            //hero
-            var heroRes: egret.Texture[] = [
-                RES.getRes("hero_run1"),
-                RES.getRes("hero_run2"),
-                RES.getRes("hero_run3"),
-                RES.getRes("hero_run4")
-            ];
-
-            this.hero = new dodge.Hero(heroRes);
-            this.hero.setSkill1Textures([
-                RES.getRes("hero_skill1_1"),
-                RES.getRes("hero_skill1_2"),
-                RES.getRes("hero_skill1_3"),
-                RES.getRes("hero_skill1_4"),
-                RES.getRes("hero_skill1_5"),
-                RES.getRes("hero_skill1_6")
-            ]);
-            this.hero.y = this.height - 250;
-            this.hero.x = 150;
-            this.addChild(this.hero);
-
-            //玩家
+            //创建玩家
             var playerRes: egret.Texture[] = [
                 RES.getRes("player_flappybird_1"),
                 RES.getRes("player_flappybird_2"),
                 RES.getRes("player_flappybird_3")
             ];
             this.player = new dodge.Player(playerRes);
+            
             this.addChild(this.player);
 
+            //创建地图
+            this.map=new dodge.MapReader();
 
-            this.createUI();
-
-            //工厂初始化
-            dodge.EntityFactory.textureCacheDict = {
-                "deer": [
-                    RES.getRes("enemy_deer_1"),
-                    RES.getRes("enemy_deer_2"),
-                    RES.getRes("enemy_deer_3"),
-                    RES.getRes("enemy_deer_4"),
-                    RES.getRes("enemy_deer_5")
-                ],
-                "medicine": [
-                    RES.getRes("item_medicine_hp")
-                ],
-                "bubble": [
-                    RES.getRes("item_poison_bubble")
-                ]
-            };
-            this.timer = new egret.Timer(1000, 0);
-            this.timer.addEventListener(egret.TimerEvent.TIMER, this.timeToGenerateMonster, this);
+            //怪物工厂初始化
+            dodge.EntityFactory.init();
+            
+            //UI界面
+            this.mainUI=new dodge.MainUI();
+            this.addChild(this.mainUI);
 
             //键盘控制
             this.keyboardController = new dodge.KeyboardController();
             this.keyboardController.listen();
-        }
-
-        private timeToGenerateMonster(evt: egret.TimerEvent) {
-            this.time++;
-
-            if (this.time % 3 == 0) {
-                this.putAnEnemy();
-            }
-            this.updateUI();
-        }
-
-        private createBkg() {
-            var texture: egret.Texture = RES.getRes("bkg1");
-            this.textureWidth = texture.textureWidth;
-            var count = Math.ceil(this.width / texture.textureWidth) + 2;//计算在当前屏幕中，需要的图片数量
-            this.bkg = [];
-            //创建这些图片，并设置y坐标，让它们连接起来
-            for (var i: number = 0; i < count; i++) {
-                var bgBmp: egret.Bitmap = new egret.Bitmap(texture);
-                bgBmp.y = 0;
-                bgBmp.x = texture.textureWidth * i;
-                this.bkg.push(bgBmp);
-                this.addChild(bgBmp);
-            }
-        }
-
-        private createUI() {
-            //添加ui元素
-            this.btnPause = new egret.Bitmap(RES.getRes("btn_pause"));
-            this.btnPause.x = 10;
-            this.btnPause.y = 10;
-            this.btnPause.pixelHitTest = true;
-            //this.addChild(this.btnPause);  //先不加暂停
-
-
-
-            this.timeSign = new egret.TextField();
-            this.timeSign.x = this.width - 30;
-            this.timeSign.y = 20;
-            this.timeSign.text = "00:00";
-            this.timeSign.anchorOffsetX = this.timeSign.width;
-            this.addChild(this.timeSign);
-
-
-
-            this.HPSign = new egret.Shape();
-            this.HPSign.x = 20;
-            this.HPSign.y = this.height - 50;
-            this.HPSign.alpha = 0.8;
-            
-            this.addChild(this.HPSign);
-            //this.HPSign.anchorOffsetX = 50;//3、锚点居于左上角x轴 50 像素的位置
-
-            //监听事件
-        // this.btnPause.touchEnabled = true;
-            //this.btnPause.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onPause, this);
-            this.updateUI();
         }
 
         private Reiniti() {
@@ -166,32 +94,16 @@ module dodge{
             this.player.y = this.height / 2;
             this.player.x = this.width / 2 - this.player.width / 2;
             this.player.HP = this.player.MAXHP;
-
-            //创建这些图片，并设置y坐标，让它们连接起来
-            for (var i: number = 0; i < this.bkg.length; i++) {
-                var bgBmp: egret.Bitmap = this.bkg[i];
-                bgBmp.y = 0;
-                bgBmp.x = bgBmp.texture.textureWidth * i;
-            }
-
             this.time = 0;
-            this.updateUI();
+            MainScene.speedLevel=1;
+
+            this.map.init();
+            this.map.setMap("level1");
 
         }
 
-        private updateUI() {
-            this.timeSign.text = dodge.Utils.timeFormat(this.time);
-            this.HPSign.graphics.clear();
-            this.HPSign.graphics.lineStyle(1, 0x333333);
-            this.HPSign.graphics.drawRect(0, 0, this.width/2, 32);
-            this.HPSign.graphics.beginFill(0xff7777);
-            this.HPSign.graphics.drawRect(1, 1, this.width / 2 * this.player.HP / this.player.MAXHP, 30);
-            this.HPSign.graphics.endFill();
-            
-        }
         private onPause(evt: egret.TouchEvent) {
             this.stopAllAnimation();
-            this.timer.stop();
         }
 
 
@@ -199,14 +111,12 @@ module dodge{
             this.removeEventListener(egret.Event.ENTER_FRAME, this.enterFrame, this);
             this.enemies.forEach((item) => { item.stopAnimate(); });
             this.player.stopAnimate();
-            this.hero.stopAnimate();
         }
 
         private startAllAnimation() {
             this.addEventListener(egret.Event.ENTER_FRAME, this.enterFrame, this);
             this.enemies.forEach((item) => { item.startAnimate(); });
             this.player.startAnimate();
-            this.hero.startAnimate();
         }
 
         //随机产生一个怪物
@@ -223,30 +133,30 @@ module dodge{
             deer.anchorOffsetX = deer.width / 2;
             deer.anchorOffsetY = deer.height / 2;
             deer.speedX = -4;
-            this.addChildAt(deer, this.bkg.length);
+            this.addChildAt(deer,1); //在背景之上
             this.enemies.push(deer);
             deer.startAnimate();
         }
 
         private putAHubble() {
-            var med = dodge.EntityFactory.produce<dodge.Bubble>(dodge.Bubble, "bubble");
-            med.y = this.height+100;
-            med.x = dodge.Utils.getRandomValue(this.width, 6) + med.realWidth;
-            med.anchorOffsetX = med.width / 2;
-            med.anchorOffsetY = med.height / 2;
-            med.speedY = -3;
-            this.addChildAt(med, this.bkg.length);
-            this.enemies.push(med);
+            var hubble = dodge.EntityFactory.produce<dodge.Bubble>(dodge.Bubble, "bubble");
+            hubble.y = dodge.Utils.getRandomValue(this.height, 6) -hubble.realHeight/2;
+            hubble.x = this.width + 300;
+            hubble.anchorOffsetX = hubble.width / 2;
+            hubble.anchorOffsetY = hubble.height / 2;
+            hubble.speedX = -3;
+            this.addChildAt(hubble, 1);
+            this.enemies.push(hubble);
         }
 
         private putAMedicine() {
             var med = dodge.EntityFactory.produce<dodge.Medicine>(dodge.Medicine, "medicine");
-            med.y = 30;
-            med.x = dodge.Utils.getRandomValue(this.width, 6) + med.realWidth;
+            med.y =dodge.Utils.getRandomValue(this.height, 6) -med.realHeight/2;
+            med.x = this.width + 300;
             med.anchorOffsetX = med.width / 2;
             med.anchorOffsetY = med.height / 2;
-            med.speedY = 2;
-            this.addChildAt(med, this.bkg.length);
+            med.speedX = -2;
+            this.addChildAt(med, 1);
             this.enemies.push(med);
             //med.startAnimate(); //因为药品的资源只有一个所以没必要开计时器了
         }
@@ -254,7 +164,7 @@ module dodge{
         //分发消息,下通知说游戏已经结束
         private gameOver() {
             this.stopAllAnimation();
-            this.timer.stop();
+            
             var OnOverEvent:GameEvent = new GameEvent(GameEvent.Event.OnGameOver);
             this.dispatchEvent(OnOverEvent);
         }
@@ -264,12 +174,13 @@ module dodge{
         public run() {
             this.Reiniti();
             this.startAllAnimation();
-            this.timer.start();
+            this.distance=0;
+            this.mainUI.init();
         }
 
 
-
         //每帧更新画面,并且计算碰撞和回收跑出屏幕外的东西
+        //30帧,每帧大概走2,那就是60
         private enterFrame(evt: egret.Event) {
 
             //为了防止FPS下降造成回收慢，生成快，进而导致DRAW数量失控，需要计算一个系数，当FPS下降的时候，让运动速度加快
@@ -278,37 +189,31 @@ module dodge{
             this._lastTime = nowTime;
             var speedOffset: number = 30 / fps;
 
+            this.distance+=MainScene.getSpeed()*speedOffset;
+            this.mainUI.setDistance(this.distance);
+
+            //控制部分需要重构不过暂时不动
             if (this.keyboardController.isUp()) {
                 this.player.y -= speedOffset * this.player.speedY;
-                if(this.player.y<0)this.player.y = 0;
+                if(this.player.y<this.top)this.player.y = this.top;
             }
-
             if (this.keyboardController.isDown()) {
                 this.player.y += speedOffset * this.player.speedY;
-                if (this.player.y + this.player.height > this.height) this.player.y = this.height - this.player.height;
+                if (this.player.y + this.player.height > this.bottom) this.player.y = this.bottom - this.player.height;
             }
-
             if (this.keyboardController.isLeft()) {
                 this.player.x -= speedOffset * this.player.speedX;
                 if (this.player.x < 0) this.player.x = 0;
             }
-
             if (this.keyboardController.isRight()) {
                 this.player.x += speedOffset * this.player.speedX;
                 if (this.player.x + this.player.width > this.width) this.player.x = this.width - this.player.width;
             }
 
-            //更新背景
-            for (var i: number = 0; i < this.bkg.length; i++) {
-                var bgBmp: egret.Bitmap = this.bkg[i];
-                bgBmp.x -= this.bkgSpeed * speedOffset;
-                if (bgBmp.x + this.textureWidth < -this.width) {
-                    bgBmp.x += this.textureWidth * this.bkg.length;
-                }
-            }
+            this.bkg.update(speedOffset);
 
 
-            //遍历所有怪物
+            //遍历所有怪物,更新位置并检测碰撞
             for (var i: number = 0; i < this.enemies.length; i++) {
                 var enemy: dodge.GameObject = this.enemies[i];
                 enemy.updatePostion(speedOffset);  //更新位置
@@ -316,7 +221,6 @@ module dodge{
                 if(enemy.checkHitPoint(this.player)){  //检测碰撞
                     // enemy.effectOnPlayer(this.player); //如果碰到了,进行伤害结算
                     dodge.HarmCalculator.calculate(enemy,this.player,enemy.getHarm());
-
                 }
 
 
@@ -328,15 +232,64 @@ module dodge{
                 }
             }
 
-            //this.hero.updatePostion(speedOffset);//试试看
-
-
             //检查是否死亡了
             if (this.player.HP <= 0) {
                 this.gameOver();
             }
-            this.updateUI();
+            
+            this.mainUI.setHP(this.player.HP);
+            this.putMonsters();
 
         }
+
+
+        private parseOrbit(orbit:any):void{
+            var endDistance:number=0;
+            var newEndDistance:number;
+            for(var index=0;index<orbit.positions.length;++index){
+                //天哪,这里不就是反射么,好吧其实不是
+                var className=dodge.EntityFactory.Enemies[orbit.name];
+                var newMonster:dodge.GameObject = dodge.EntityFactory.produce<dodge.GameObject>(className, orbit.name);
+
+                var offsetX=orbit.positions[index][0]*MainScene.rectSize;
+                newMonster.x=offsetX+this.width+20;
+                newMonster.y=orbit.positions[index][1]*MainScene.rectSize+this.top;
+                
+                newMonster.speedX= - MainScene.getSpeed();
+                this.addChildAt(newMonster,1);
+                this.enemies.push(newMonster);
+
+                //找到这个orbit最远结束的地方
+                newEndDistance=this.distance+offsetX+newMonster.getWidth();
+                if(endDistance<newEndDistance)endDistance=newEndDistance;
+                // console.log("add a monster at point ("+newMonster.x+","+newMonster.y+")");
+                // newMonster.startAnimate();
+            }
+            this.map.setEndDistance(endDistance);
+        }
+
+        //根据当前前进的距离决定是否刷怪
+        private putMonsters():void{
+            if(!this.map.isEnd()){
+                console.log("地图还没完");
+                var orbit=this.map.query(this.distance); //询问地图该不该刷怪
+                if(orbit.positions){  //开始刷怪
+                    this.parseOrbit(orbit);
+                }else if(orbit==-1){ //再等等才会有
+                    //pass
+                }
+            }else{
+                console.log("尝试获取随机地图");
+                var orbit=this.map.getRandomOrbit(this.distance);
+                 if(orbit.positions){  //开始刷怪
+                     console.log("done");
+                    this.parseOrbit(orbit);
+                }else if(orbit==-1){
+                    console.log("wait");
+                }
+            }
+            
+        }
+
     }
 }
