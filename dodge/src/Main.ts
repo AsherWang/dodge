@@ -43,7 +43,6 @@ class Main extends egret.DisplayObjectContainer {
     private mainSceneView: dodge.MainScene; //主游戏界面
     private scoreBoard: dodge.ScoreBoard; //计分板
 
-
     public constructor() {
         super();
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
@@ -186,10 +185,9 @@ class Main extends egret.DisplayObjectContainer {
         var stageW: number = this.stage.stageWidth;
         var stageH: number = this.stage.stageHeight;
         if (!this.scoreBoard) {
-            this.scoreBoard = new dodge.ScoreBoard(stageW,stageH);
+            this.scoreBoard = new dodge.ScoreBoard();
         }
-        this.makeChildCenter(this.scoreBoard, stageW,stageH);
-
+        this.scoreBoard.setData(evt.msg);
 
         this.stage.addChild(this.scoreBoard);
         this.scoreBoard.addEventListener(dodge.GameEvent.Event.OnGameRestart, this.OnGameRestart, this);

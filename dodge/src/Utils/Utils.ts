@@ -35,6 +35,10 @@
             return container[Math.floor(Math.random() * container.length)];
         }
 
+
+        public static pxToMeter(px:number):string{
+            return (px/10).toFixed(2);
+        }
         
     }
 }

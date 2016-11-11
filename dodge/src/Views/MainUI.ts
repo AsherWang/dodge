@@ -18,8 +18,9 @@ module dodge{
         private top:number; 
         private bottom:number;
 
+        private recorder:dodge.Recorder;
 
-        public constructor(){
+        public constructor(recorder:dodge.Recorder){
             super();
             this.height = egret.MainContext.instance.stage.stageHeight;
             this.width = egret.MainContext.instance.stage.stageWidth;
@@ -65,14 +66,14 @@ module dodge{
             this.btnPause.pixelHitTest = true;
             this.timer = new egret.Timer(1000, 0);
             this.timer.addEventListener(egret.TimerEvent.TIMER, this.onTimer, this);
-           
-            this.setHP(3);
-
+            this.recorder=recorder;
         }
 
         //初始化
         public init():void{
             this.timeSeconds=0;
+            this.distance.text="0.00";
+            this.timeSign.text = "00:00";
             this.resume();
         }
 
@@ -96,14 +97,14 @@ module dodge{
 
         //所以大概每10像素是1米
         public setDistance(distance:number):void{
-            this.distance.text=(distance/10).toFixed(2)+"m";
-            
+            this.distance.text=dodge.Utils.pxToMeter(distance)+"m";
         }
 
 
         private onTimer(evt: egret.TimerEvent) {
             this.timeSeconds++;
             this.timeSign.text = dodge.Utils.timeFormat(this.timeSeconds);
+            this.recorder.time=this.timeSeconds;
         }
     }
 }

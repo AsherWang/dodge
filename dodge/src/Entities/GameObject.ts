@@ -47,6 +47,7 @@
 
         //开始动作
         public startAnimate() {
+            if(this.textureList.length<=1)return;
             if (!this.animateTimer)this.animateTimer = new egret.Timer(100, 0);
             this.animateTimer.addEventListener(egret.TimerEvent.TIMER, this.onAnimateTimer, this);
             this.animateTimer.start();
@@ -66,7 +67,7 @@
 
 
         //更新位置
-        public updatePostion(speedRate) {
+        public updatePostion(speedRate:number) {
             this.x += this.speedX * speedRate;
             this.y += this.speedY * speedRate;
         }
