@@ -1,4 +1,16 @@
 {
     "orbits":[
+        "trap1_head",
+        "trap1_tail1",
+        "trap1_head",
+        "trap1_tail2",
+        "line",
+        "line",
+        "line",
+        "line",
+        "line",
+        "line",
+        "line",
+        "line"
     ]
 }

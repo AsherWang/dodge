@@ -1,6 +1,6 @@
 ﻿///<reference path="./Medicine.ts" />
 ///<reference path="./Bubble.ts" />
-///<reference path="./Deer.ts" />
+///<reference path="./Block.ts" />
 
 module dodge {
 
@@ -9,7 +9,7 @@ module dodge {
         public static Enemies={
             "medicine":dodge.Medicine,
             "bubble":dodge.Bubble,
-            "deer":dodge.Deer
+            "block":dodge.Block
         }
         private static cacheDict: Object = {};  //缓存一堆对象数组的池子,索引是name
         public static textureCacheDict: Object = {}; //缓存一堆资源数组的池子,索引是name
@@ -32,6 +32,12 @@ module dodge {
                 ],
                 "bubble": [
                     RES.getRes("item_poison_bubble")
+                ],
+                "triangle_red":[
+                    RES.getRes("triangle_red")
+                ],
+                "rhombus_red":[
+                    RES.getRes("rhombus_red")
                 ]
             };
         }

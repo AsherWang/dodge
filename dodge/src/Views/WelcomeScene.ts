@@ -29,7 +29,7 @@ module dodge{
             this.btnStart = new egret.TextField();
             this.addChild(this.btnStart);
             this.btnStart.y = 200;
-            this.btnStart.text = "PUSH START";
+            this.btnStart.text = "PRESS START";
             this.btnStart.textAlign = "center";
             this.btnStart.verticalAlign = "center";
             this.btnStart.width = 480;

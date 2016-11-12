@@ -1,5 +1,6 @@
 {
     "name":"medicine",
+    "resName":"medicine",
     "positions":[
         [9,0],
         [8,1],

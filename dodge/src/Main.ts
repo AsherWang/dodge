@@ -83,6 +83,8 @@ class Main extends egret.DisplayObjectContainer {
         }else if (event.groupName == "ui") {
             RES.loadGroup("enemy");
         }else if (event.groupName == "enemy") {
+            RES.loadGroup("block");
+        }else if (event.groupName == "block") {
             RES.loadGroup("map");
         }else if(event.groupName == "map"){
             this.stage.removeChild(this.loadingView);

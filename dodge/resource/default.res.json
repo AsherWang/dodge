@@ -1,11 +1,11 @@
 {
 	"groups": [
 		{
-			"keys": "description_json,player_flappybird_1,player_flappybird_2,player_flappybird_3,heart",
+			"keys": "description_json,player_flappybird_1,player_flappybird_2,player_flappybird_3,heart,rhombus_blond_png,rhombus_blue_png,rhombus_green_png,rhombus_purple_png,rhombus_red_png,triangle_blond_png,triangle_blue_png,triangle_green_png,triangle_purple_png,triangle_red_png,block_test,trap1_tail1,trap1_head,trap1_tail2,line_json",
 			"name": "preload"
 		},
 		{
-			"keys": "enemy_deer_1,enemy_deer_2,enemy_deer_3,enemy_deer_4,enemy_deer_5,hero_run1,hero_run2,hero_run3,hero_run4,hero_skill1_1,hero_skill1_2,hero_skill1_3,hero_skill1_4,hero_skill1_5,hero_skill1_6,item_medicine_hp,mask,item_poison_bubble",
+			"keys": "hero_run1,hero_run2,hero_run3,hero_run4,hero_skill1_1,hero_skill1_2,hero_skill1_3,hero_skill1_4,hero_skill1_5,hero_skill1_6,item_medicine_hp,mask,item_poison_bubble",
 			"name": "enemy"
 		},
 		{
@@ -13,8 +13,12 @@
 			"name": "ui"
 		},
 		{
-			"keys": "level1,orbit_test,orbit_medicine",
+			"keys": "level1,orbit_test,orbit_medicine,block_test,trap1_head,trap1_tail1,trap1_tail2,line",
 			"name": "map"
+		},
+		{
+			"keys": "rhombus_blond,rhombus_blue,rhombus_green,rhombus_purple,rhombus_red,triangle_blond,triangle_blue,triangle_green,triangle_purple,triangle_red",
+			"name": "block"
 		}
 	],
 	"resources": [
@@ -37,31 +41,6 @@
 			"url": "config/description.json",
 			"type": "json",
 			"name": "description_json"
-		},
-		{
-			"url": "assets/enemy/deer/1.png",
-			"type": "image",
-			"name": "enemy_deer_1"
-		},
-		{
-			"url": "assets/enemy/deer/2.png",
-			"type": "image",
-			"name": "enemy_deer_2"
-		},
-		{
-			"url": "assets/enemy/deer/3.png",
-			"type": "image",
-			"name": "enemy_deer_3"
-		},
-		{
-			"url": "assets/enemy/deer/4.png",
-			"type": "image",
-			"name": "enemy_deer_4"
-		},
-		{
-			"url": "assets/enemy/deer/5.png",
-			"type": "image",
-			"name": "enemy_deer_5"
 		},
 		{
 			"url": "assets/bkg/1.png",
@@ -167,6 +146,136 @@
 			"url": "assets/ui/border.png",
 			"type": "image",
 			"name": "border"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_blond.png",
+			"type": "image",
+			"name": "rhombus_blond"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_blue.png",
+			"type": "image",
+			"name": "rhombus_blue"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_green.png",
+			"type": "image",
+			"name": "rhombus_green"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_purple.png",
+			"type": "image",
+			"name": "rhombus_purple"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_red.png",
+			"type": "image",
+			"name": "rhombus_red"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_blond.png",
+			"type": "image",
+			"name": "triangle_blond"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_blue.png",
+			"type": "image",
+			"name": "triangle_blue"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_green.png",
+			"type": "image",
+			"name": "triangle_green"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_purple.png",
+			"type": "image",
+			"name": "triangle_purple"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_red.png",
+			"type": "image",
+			"name": "triangle_red"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_blond.png",
+			"type": "image",
+			"name": "rhombus_blond_png"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_blue.png",
+			"type": "image",
+			"name": "rhombus_blue_png"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_green.png",
+			"type": "image",
+			"name": "rhombus_green_png"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_purple.png",
+			"type": "image",
+			"name": "rhombus_purple_png"
+		},
+		{
+			"url": "assets/enemy/blocks/rhombus_red.png",
+			"type": "image",
+			"name": "rhombus_red_png"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_blond.png",
+			"type": "image",
+			"name": "triangle_blond_png"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_blue.png",
+			"type": "image",
+			"name": "triangle_blue_png"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_green.png",
+			"type": "image",
+			"name": "triangle_green_png"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_purple.png",
+			"type": "image",
+			"name": "triangle_purple_png"
+		},
+		{
+			"url": "assets/enemy/blocks/triangle_red.png",
+			"type": "image",
+			"name": "triangle_red_png"
+		},
+		{
+			"url": "orbits/block_test.json",
+			"type": "json",
+			"name": "block_test"
+		},
+		{
+			"url": "orbits/trap1_tail1.json",
+			"type": "json",
+			"name": "trap1_tail1"
+		},
+		{
+			"url": "orbits/trap1_head.json",
+			"type": "json",
+			"name": "trap1_head"
+		},
+		{
+			"url": "orbits/trap1_tail2.json",
+			"type": "json",
+			"name": "trap1_tail2"
+		},
+		{
+			"url": "orbits/line.json",
+			"type": "json",
+			"name": "line"
+		},
+		{
+			"url": "orbits/line.json",
+			"type": "json",
+			"name": "line_json"
 		}
 	]
 }

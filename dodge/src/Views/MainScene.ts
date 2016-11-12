@@ -17,19 +17,9 @@ module dodge{
         // top 和 bottom相差500,然后上下对称,两边则用贴图覆盖
         public static battleHeighgt:number=500;
         public static rectSize=50;
-        private static bkgSpeed: number = 4;  //背景速度,也就是前进速度
-        private static speedLevel:number=1;
+        // private static bkgSpeed: number = 2;  //背景速度,也就是前进速度
+        // private static speedLevel:number=1;
 
-        //获取当前卷屏速度
-        public static getSpeed():number{ 
-            return MainScene.bkgSpeed * (1+MainScene.speedLevel*0.8);
-        }
-
-        public static getSpeedRate():number{
-            return [0,
-                2,5,8,12,23,34,40
-            ][MainScene.speedLevel];
-        }
         private top:number; 
         private bottom:number;
         
@@ -40,13 +30,6 @@ module dodge{
             this.createView();
         }
 
-        private upgradeSpeed():void{
-            if(MainScene.speedLevel>=7)return;
-            if(this.recorder.distance>200*MainScene.speedLevel){
-                MainScene.speedLevel++;
-                console.log("speed up:"+MainScene.speedLevel);
-            }
-        }
 
         private createView(): void {
             
@@ -56,8 +39,11 @@ module dodge{
             this.top=(this.height-MainScene.battleHeighgt)/2;
             this.bottom=this.top+MainScene.battleHeighgt;
 
+            //记录
+            this.recorder = new dodge.Recorder(); 
+
             //创建背景
-            this.bkg=new dodge.MainBackground();
+            this.bkg=new dodge.MainBackground(this.recorder);
             this.addChild(this.bkg);
 
             //创建玩家
@@ -76,8 +62,7 @@ module dodge{
             //怪物工厂初始化
             dodge.EntityFactory.init();
             
-             //记录
-            this.recorder = new dodge.Recorder(); 
+
 
             //UI界面
             this.mainUI=new dodge.MainUI(this.recorder);
@@ -100,13 +85,13 @@ module dodge{
             this.player.y = this.height / 2;
             this.player.x = this.width / 2 - this.player.width / 2;
             this.player.HP = this.player.MAXHP;
-            MainScene.speedLevel=1;
 
             this.map.init();
             this.map.setMap("level1");
             
             this.recorder.init();
             this.mainUI.init();
+            this.bkg.init();
             this.startAllAnimation();
 
         }
@@ -154,32 +139,34 @@ module dodge{
             var fps: number = 1000 / (nowTime - this._lastTime);
             this._lastTime = nowTime;
             var speedOffset: number = 30 / fps;
-
             speedOffset = 1;
+            var tmpRate:number=this.recorder.getSpeedRate()*speedOffset;
+            // speedOffset = 1;
 
-            this.recorder.distance+=MainScene.getSpeed()*speedOffset;
+            this.recorder.distance+=this.recorder.getSpeed()*tmpRate;
             this.mainUI.setDistance(this.recorder.distance);
+        
 
             //控制部分需要重构不过暂时不动
-            var tmpRate:number=MainScene.getSpeedRate()*speedOffset;
+            
             if (this.keyboardController.isUp()) {
                 this.player.y -= speedOffset * this.player.speedY;
-                if(this.player.y<this.top)this.player.y = this.top;
+                if(this.player.y<this.top+this.player.height/2)this.player.y = this.top+this.player.height/2;
             }
             if (this.keyboardController.isDown()) {
                 this.player.y += speedOffset * this.player.speedY;
-                if (this.player.y + this.player.height > this.bottom) this.player.y = this.bottom - this.player.height;
+                if (this.player.y + this.player.height/2 > this.bottom) this.player.y = this.bottom - this.player.height/2;
             }
             if (this.keyboardController.isLeft()) {
                 this.player.x -= speedOffset * this.player.speedX;
-                if (this.player.x < 0) this.player.x = 0;
+                if (this.player.x < this.player.width/2) this.player.x = this.player.width/2;
             }
             if (this.keyboardController.isRight()) {
                 this.player.x += speedOffset * this.player.speedX;
-                if (this.player.x + this.player.width > this.width) this.player.x = this.width - this.player.width;
+                if (this.player.x > this.width - this.player.width/2) this.player.x = this.width - this.player.width/2;
             }
 
-            this.bkg.update(tmpRate);
+            
 
 
             //遍历所有怪物,更新位置并检测碰撞
@@ -204,56 +191,64 @@ module dodge{
             if (this.player.HP <= 0) {
                 this.gameOver();
             }
-            
+            this.bkg.update(tmpRate);
             this.mainUI.setHP(this.player.HP);
             this.putMonsters();
-
+            this.recorder.upgradeSpeed();
         }
 
 
         private parseOrbit(orbit:any):void{
             var endDistance:number=0;
-            var newEndDistance:number;
+            var tempDistance:number;
             for(var index=0;index<orbit.positions.length;++index){
                 //天哪,这里不就是反射么,好吧其实不是
                 var className=dodge.EntityFactory.Enemies[orbit.name];
-                var newMonster:dodge.GameObject = dodge.EntityFactory.produce<dodge.GameObject>(className, orbit.name);
+                var newMonster:dodge.GameObject = dodge.EntityFactory.produce<dodge.GameObject>(className, orbit.resName);
 
                 var offsetX=orbit.positions[index][0]*MainScene.rectSize;
-                newMonster.x=offsetX+this.width+20;
-                newMonster.y=orbit.positions[index][1]*MainScene.rectSize+this.top;
+
+                newMonster.x=offsetX+this.width+newMonster.width/2; //屏幕外出障碍
+                newMonster.y=orbit.positions[index][1]*MainScene.rectSize+this.top+newMonster.height/2;
                 
-                newMonster.speedX= - MainScene.getSpeed();
+                // newMonster.speedX= - MainScene.getSpeed();
+                newMonster.speedX= - this.recorder.getSpeed();
+                if(Math.random()<0.2)newMonster.spin();
                 this.addChildAt(newMonster,1);
                 this.enemies.push(newMonster);
 
                 //找到这个orbit最远结束的地方
-                newEndDistance=this.recorder.distance+offsetX+newMonster.getWidth();
-                if(endDistance<newEndDistance)endDistance=newEndDistance;
+                tempDistance=this.recorder.distance+offsetX+MainScene.rectSize;
+                if(endDistance<tempDistance)endDistance=tempDistance;
                 // console.log("add a monster at point ("+newMonster.x+","+newMonster.y+")");
                 // newMonster.startAnimate();
             }
             this.map.setEndDistance(endDistance);
+
+            console.log("orbit:"+this.recorder.distance+"~"+endDistance);
+
         }
 
         //根据当前前进的距离决定是否刷怪
         private putMonsters():void{
             if(!this.map.isEnd()){
-                console.log("地图还没完");
+                // console.log("地图还没完");
                 var orbit=this.map.query(this.recorder.distance); //询问地图该不该刷怪
-                if(orbit.positions){  //开始刷怪
+                if(orbit && orbit.positions){  //开始刷怪
                     this.parseOrbit(orbit);
                 }else if(orbit==-1){ //再等等才会有
                     //pass
                 }
             }else{
-                console.log("尝试获取随机地图");
+                // console.log("尝试获取随机地图");
                 var orbit=this.map.getRandomOrbit(this.recorder.distance);
                  if(orbit.positions){  //开始刷怪
-                     console.log("done");
+                    // console.log("done");
+                    // console.log(orbit.name);
+                    // console.log(this.recorder.distance);
                     this.parseOrbit(orbit);
                 }else if(orbit==-1){
-                    console.log("wait");
+                    // console.log("wait");
                 }
             }
             

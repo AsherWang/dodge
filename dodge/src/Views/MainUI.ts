@@ -30,18 +30,18 @@ module dodge{
             //里程数
             this.distance=new egret.TextField();
             this.distance.text="0.00";
-            this.distance.x=20;
-            this.distance.anchorOffsetY=this.distance.height/2;
-            this.distance.y=this.top/2;
+            this.distance.x=5;
+            this.distance.y=5;
             this.addChild(this.distance);
 
             //显示时间
             this.timeSign = new egret.TextField();
             this.timeSign.text = "00:00";
-            this.timeSign.x = this.width - 30;
-            this.timeSign.y = this.top/2;
+            this.timeSign.x = this.width - 5;
+            // this.timeSign.y = this.top/2;
+            this.timeSign.y=5;
             this.timeSign.anchorOffsetX = this.timeSign.width;
-            this.timeSign.anchorOffsetY  = this.timeSign.height/2;
+            // this.timeSign.anchorOffsetY  = this.timeSign.height/2;
             this.addChild(this.timeSign);
 
 
@@ -53,9 +53,10 @@ module dodge{
                 this.addChild(heart);
                 heart.width=30;
                 heart.height=30;
-                heart.anchorOffsetY=heart.height/2;
-                heart.x=index*heart.width*1.1 + 30;
-                heart.y=this.height-this.top/2;
+                heart.anchorOffsetY=heart.height;
+                heart.x=index*heart.width*1.1 + 5;
+                // heart.y=this.height-this.top/2;
+                heart.y=this.height-5;
                 this.hearts.push(heart);
             }
 
@@ -98,8 +99,9 @@ module dodge{
         //所以大概每10像素是1米
         public setDistance(distance:number):void{
             this.distance.text=dodge.Utils.pxToMeter(distance)+"m";
+            // this.distance.text=distance/10+"m";
+            
         }
-
 
         private onTimer(evt: egret.TimerEvent) {
             this.timeSeconds++;

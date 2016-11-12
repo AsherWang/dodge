@@ -36,9 +36,20 @@
         }
 
 
-        public static pxToMeter(px:number):string{
-            return (px/10).toFixed(2);
+        public static pxToMeter(px:number,fixed:number=2):string{
+            return (px/10).toFixed(fixed);
         }
         
+        //实际x到屏幕x
+        public static distance2Screen(currentDistance:number,distance:number){
+            return currentDistance-distance;
+        }
+
+        //屏幕x到实际x
+        public static screen2Distance(currentDistance:number,screenX:number){
+            return currentDistance+screenX;
+        }
+
+
     }
 }

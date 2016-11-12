@@ -26,6 +26,7 @@
         protected currentImgIndex: number = 0;  //当前显示的图片
         protected textureList: any = [];  //所有动作的图片
 
+        protected twSpin:egret.Tween;//缓动动画
 
         public constructor(textures: egret.Texture[]) {
             super();
@@ -34,6 +35,8 @@
             this.addChild(this.img);
             this.realHeight = this.img.height;
             this.realWidth = this.img.width;
+            this.anchorOffsetX=this.width/2;
+            this.anchorOffsetY=this.height/2;
             this.timer = new egret.Timer(this.timeHurt*1000);
         }
 
@@ -43,6 +46,20 @@
 
         public getHeight():number{
             return this.img.height;
+        }
+
+        //转起来,每duration毫秒转一圈
+        public spin(duration:number=1000,loop:boolean=true):void{
+            if(!this.twSpin){
+                this.twSpin = egret.Tween.get(this,{loop:loop});
+                this.twSpin.to( {rotation:360}, duration);
+            }    
+        }
+
+        public stopSpin():void{
+            if(this.twSpin){
+                egret.Tween.removeTweens(this);
+            }
         }
 
         //开始动作
@@ -73,13 +90,10 @@
         }
 
         public checkHitPoint(player: dodge.Player): boolean {
-            var player_x1: number = player.x - player.width / 2;
-            var player_y1: number  = player.y - player.height / 2;
-            var player_x2: number  = player.x + player.width / 2;
-            var player_y2: number = player.y + player.height / 2;
-            var self_x1: number = this.x - this.realWidth / 2;
-            var self_y1: number = this.y - this.realHeight / 2;
-
+            var player_x1: number = player.x - player.realWidth/2;
+            var player_y1: number  = player.y - player.realHeight/2;
+            var player_x2: number  = player.x + player.realWidth/2;
+            var player_y2: number = player.y + player.realHeight/2;
             return this.hitPoint(player_x2, player_y1)
                 || this.hitPoint(player_x2, player_y2)
                 || this.hitPoint(player_x1, player_y1)
@@ -90,9 +104,9 @@
 
         //检测一个点是不是在一个矩形内
         private hitPoint(x1, y1): boolean {
-            var x2: number = this.x - this.realWidth / 2;
-            var y2: number = this.y - this.realHeight / 2;
-            return (x2 - x1 < 0) && (x2 + this.realWidth - x1 > 0) && (y2 - y1 < 0) && (y2 + this.realHeight - y1 > 0);
+            var x2: number = this.x + this.realWidth/2;
+            var y2: number = this.y + this.realHeight/2;
+            return (x1 > this.x - this.realWidth/2) && (x1 < x2) && (y1 > this.y - this.realHeight/2) && (y1 < y2);
         }
 
         public effectOnPlayer(player: dodge.Player): void {
