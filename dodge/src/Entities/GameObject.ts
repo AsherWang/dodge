@@ -168,8 +168,9 @@
         }
 
         //如果需要回收就回收了
+        //障碍物基本都是从右边过来的,所以对x的上限放宽一些,不然刚出来就会被回收掉吧
         public checkReclaim(width, height) {
-            return this.readyToReclaim || (this.x + this.realWidth < -1000) || (this.x > width + 1000) || (this.y + this.realHeight < -1000) || (this.y + this.realHeight > height + 1000);
+            return this.readyToReclaim || (this.x + this.realWidth < -1000) || (this.x > width + 4000) || (this.y + this.realHeight < -1000) || (this.y + this.realHeight > height + 1000);
         }
 
     }

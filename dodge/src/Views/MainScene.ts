@@ -201,19 +201,23 @@ module dodge{
         private parseOrbit(orbit:any):void{
             var endDistance:number=0;
             var tempDistance:number;
-            for(var index=0;index<orbit.positions.length;++index){
+            var backDoor:any=[0,0,0,0,0,0,0,0,0,0];
+            var lastX=-1;
+            for(var index=0;index<orbit.enemies.length;++index){
                 //天哪,这里不就是反射么,好吧其实不是
-                var className=dodge.EntityFactory.Enemies[orbit.name];
-                var newMonster:dodge.GameObject = dodge.EntityFactory.produce<dodge.GameObject>(className, orbit.resName);
-
-                var offsetX=orbit.positions[index][0]*MainScene.rectSize;
+                // x:orbit.enemies[1]
+                // y:orbit.enemies[2]
+                var x=orbit.enemies[index][1];
+                var y=orbit.enemies[index][2];
+                var blockDesc=this.map.getBlockDescByindex(orbit.enemies[index][0]);
+                var newMonster:dodge.GameObject = dodge.EntityFactory.produce<dodge.GameObject>(dodge.EntityFactory.Enemies[blockDesc.name], blockDesc.resName);
+                var offsetX=x*MainScene.rectSize;
 
                 newMonster.x=offsetX+this.width+newMonster.width/2; //屏幕外出障碍
-                newMonster.y=orbit.positions[index][1]*MainScene.rectSize+this.top+newMonster.height/2;
+                newMonster.y=y*MainScene.rectSize+this.top+newMonster.height/2;
                 
-                // newMonster.speedX= - MainScene.getSpeed();
                 newMonster.speedX= - this.recorder.getSpeed();
-                if(Math.random()<0.2)newMonster.spin();
+                // if(Math.random()<0.2)newMonster.spin(); //20%概率旋转,不过不能这么玩儿,
                 this.addChildAt(newMonster,1);
                 this.enemies.push(newMonster);
 
@@ -222,10 +226,18 @@ module dodge{
                 if(endDistance<tempDistance)endDistance=tempDistance;
                 // console.log("add a monster at point ("+newMonster.x+","+newMonster.y+")");
                 // newMonster.startAnimate();
+
+                //找到最靠后的x
+                if(lastX == x){
+                    backDoor[y]=1;
+                }else if(lastX < x){
+                    backDoor=[0,0,0,0,0,0,0,0,0,0];
+                    backDoor[y]=1;
+                }
             }
             this.map.setEndDistance(endDistance);
-
-            console.log("orbit:"+this.recorder.distance+"~"+endDistance);
+            this.map.setBackDoor(backDoor);
+            // console.log("orbit:"+this.recorder.distance+"~"+endDistance);
 
         }
 
@@ -234,15 +246,17 @@ module dodge{
             if(!this.map.isEnd()){
                 // console.log("地图还没完");
                 var orbit=this.map.query(this.recorder.distance); //询问地图该不该刷怪
-                if(orbit && orbit.positions){  //开始刷怪
+                if(orbit && orbit.enemies){  //开始刷怪
                     this.parseOrbit(orbit);
                 }else if(orbit==-1){ //再等等才会有
                     //pass
                 }
             }else{
                 // console.log("尝试获取随机地图");
-                var orbit=this.map.getRandomOrbit(this.recorder.distance);
-                 if(orbit.positions){  //开始刷怪
+                // var orbit=this.map.getRandomOrbit(this.recorder.distance);
+                var orbit=this.map.getRandomOrbitFromGenerator(this.recorder.distance);
+                
+                 if(orbit.enemies){  //开始刷怪
                     // console.log("done");
                     // console.log(orbit.name);
                     // console.log(this.recorder.distance);

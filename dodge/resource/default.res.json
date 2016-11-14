@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "description_json,player_flappybird_1,player_flappybird_2,player_flappybird_3,heart,rhombus_blond_png,rhombus_blue_png,rhombus_green_png,rhombus_purple_png,rhombus_red_png,triangle_blond_png,triangle_blue_png,triangle_green_png,triangle_purple_png,triangle_red_png,block_test,trap1_tail1,trap1_head,trap1_tail2,line_json",
+			"keys": "description_json,player_flappybird_1,player_flappybird_2,player_flappybird_3,heart,block_test,trap1_tail1,trap1_head,trap1_tail2",
 			"name": "preload"
 		},
 		{
@@ -17,7 +17,7 @@
 			"name": "map"
 		},
 		{
-			"keys": "rhombus_blond,rhombus_blue,rhombus_green,rhombus_purple,rhombus_red,triangle_blond,triangle_blue,triangle_green,triangle_purple,triangle_red",
+			"keys": "rhombus_blond,rhombus_blue,rhombus_green,rhombus_purple,rhombus_red,triangle_blond,triangle_blue,triangle_green,triangle_purple,triangle_red,blockDictionary",
 			"name": "block"
 		}
 	],
@@ -276,6 +276,11 @@
 			"url": "orbits/line.json",
 			"type": "json",
 			"name": "line_json"
+		},
+		{
+			"url": "blocks/blockDictionary.json",
+			"type": "json",
+			"name": "blockDictionary"
 		}
 	]
 }

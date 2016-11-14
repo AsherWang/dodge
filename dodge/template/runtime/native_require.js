@@ -23,6 +23,7 @@ var game_file_list = [
 	"bin-debug/Main.js",
 	"bin-debug/Utils/KeyboardController.js",
 	"bin-debug/Utils/MapReader.js",
+	"bin-debug/Utils/MazeGenerator.js",
 	"bin-debug/Utils/Recorder.js",
 	"bin-debug/Utils/Utils.js",
 	"bin-debug/Views/LoadingUI.js",

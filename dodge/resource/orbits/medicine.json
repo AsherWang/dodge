@@ -1,7 +1,5 @@
 {
-    "name":"medicine",
-    "resName":"medicine",
-    "positions":[
+    "enemies":[
         [9,0],
         [8,1],
         [7,2],

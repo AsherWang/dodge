@@ -57,6 +57,7 @@ module dodge{
                 heart.x=index*heart.width*1.1 + 5;
                 // heart.y=this.height-this.top/2;
                 heart.y=this.height-5;
+                heart.visible=false;
                 this.hearts.push(heart);
             }
 
